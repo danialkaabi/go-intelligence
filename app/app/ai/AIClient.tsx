@@ -15,7 +15,7 @@ const CYCLE = [
   { step: 'Fix', module: 'GO Contracts', desc: 'Draft terms, reference prior charter history' },
   { step: 'Track', module: 'GO Maps', desc: 'Real-time position once on charter' },
   { step: 'Monitor', module: 'GO Alerts', desc: 'Renewal dates, off-hire events, milestones' },
-  { step: 'Close', module: 'GO Projects', desc: 'Log completion, update charter history' },
+  { step: 'Close', module: 'GO Tenders', desc: 'Log completion, update charter history' },
 ];
 
 const SUGGESTIONS = [
@@ -58,7 +58,7 @@ export default function AIClient() {
           <div className="between wrapflex" style={{ marginTop: 14 }}>
             <span className="muted" style={{ fontSize: 12 }}>
               Answers are synthesised across Fleet, Companies, Contracts,
-              Projects, Maps and Market.
+              Tenders, Maps and Market.
             </span>
             <button
               className="btn btn--primary btn--sm"

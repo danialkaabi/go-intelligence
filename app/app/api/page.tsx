@@ -19,7 +19,7 @@ const ENDPOINTS = [
   { method: 'GET', path: '/v1/companies', desc: 'Owners, operators and counterparties' },
   { method: 'GET', path: '/v1/companies/{id}', desc: 'One company with all seven management tiers' },
   { method: 'GET', path: '/v1/contracts', desc: 'The charter book, filterable by expiry window' },
-  { method: 'GET', path: '/v1/projects', desc: 'Field developments, awards and the tender pipeline' },
+  { method: 'GET', path: '/v1/tenders', desc: 'Open tenders, field developments and EPC awards' },
   { method: 'GET', path: '/v1/market/benchmarks', desc: 'Day-rate bands by region and size class' },
   { method: 'GET', path: '/v1/alerts', desc: 'Signals raised against your account' },
 ];

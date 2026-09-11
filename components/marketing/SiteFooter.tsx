@@ -48,7 +48,7 @@ export default function SiteFooter() {
               }}
             >
               One connected knowledge graph for offshore commercial
-              decisions — vessels, companies, contracts, projects,
+              decisions — vessels, companies, contracts, tenders,
               infrastructure and market data.
             </p>
           </div>

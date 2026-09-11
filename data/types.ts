@@ -18,7 +18,7 @@ import type {
   ConfidenceLevel,
   ContractStatus,
   ManagementTier,
-  ProjectPhase,
+  TenderPhase,
   Region,
   VesselCategory,
   VesselStatus,
@@ -245,7 +245,7 @@ export interface Contract {
 
   status: ContractStatus;
   region?: Region;
-  fieldOrProject?: string;
+  fieldOrTender?: string;
   /** Annualised contract value in USD. */
   annualisedValue?: number;
   optionPeriods?: string;
@@ -253,15 +253,15 @@ export interface Contract {
   provenance?: Provenance;
 }
 
-/* ---------- Project ---------- */
+/* ---------- Tender ---------- */
 
-export interface Project {
+export interface Tender {
   id: string;
   name: string;
   operator: string;
   operatorId?: string;
   region: Region;
-  phase: ProjectPhase;
+  phase: TenderPhase;
 
   /** CAPEX in USD. */
   capex?: number;
@@ -321,7 +321,7 @@ export interface Alert {
   vesselId?: string;
   companyId?: string;
   contractId?: string;
-  projectId?: string;
+  tenderId?: string;
   zone?: string;
 }
 

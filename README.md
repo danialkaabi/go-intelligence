@@ -3,11 +3,11 @@
 **Offshore commercial intelligence platform — by Gemini Offshore.**
 
 One connected knowledge graph for offshore commercial decisions: vessels,
-companies, contracts, projects, infrastructure and market data.
+companies, contracts, tenders, infrastructure and market data.
 
 This repository is the **complete platform design**. Every screen, every
 filter, every layout is built and working. **No records are included** —
-the vessel, company, contract, project and market data is yours to add.
+the vessel, company, contract, tender and market data is yours to add.
 
 ---
 
@@ -59,7 +59,7 @@ Every push to the default branch redeploys.
 | `/app/companies`       | GO Companies — owners, operators, counterparties       |
 | `/app/companies/[id]`  | Company profile — seven management tiers, fleet, charter history |
 | `/app/contracts`       | GO Contracts — the live charter book                   |
-| `/app/projects`        | GO Projects — field developments and the tender pipeline |
+| `/app/tenders`        | GO Tenders — field developments and the tender pipeline |
 | `/app/maps`            | GO Maps & Layers — spatial intelligence                |
 | `/app/market`          | GO Market — day-rate benchmarks and utilisation        |
 | `/app/ai`              | GO AI — the commercial agent                          |
@@ -95,7 +95,7 @@ All records live in `/data` as typed arrays:
 | `data/vessels.ts`    | `VESSELS`                         |
 | `data/companies.ts`  | `COMPANIES`                       |
 | `data/contracts.ts`  | `CONTRACTS`                       |
-| `data/projects.ts`   | `PROJECTS`                        |
+| `data/tenders.ts`   | `TENDERS`                        |
 | `data/market.ts`     | `RATE_BENCHMARKS`, `UTILISATION`  |
 | `data/alerts.ts`     | `ALERTS`                          |
 | `data/portfolio.ts`  | `PORTFOLIOS`                      |
@@ -105,7 +105,7 @@ Add an object to the array and every count, chart, filter and table across
 the platform recalculates from it. Nothing is hard-coded into a page.
 
 The allowed values — vessel categories, sub-types, size classes, regions,
-the seven management tiers, project phases, contract statuses — are in
+the seven management tiers, tender phases, contract statuses — are in
 `lib/taxonomy.ts`. TypeScript rejects anything outside them, so a typo
 fails at build time rather than showing up as a wrong row on a screen.
 
@@ -222,7 +222,7 @@ dependencies beyond React and Next.
 
 ## Moving this into its own repository
 
-This project is self-contained — it has its own `package.json` and needs
+This tender is self-contained — it has its own `package.json` and needs
 nothing from the directory above it. To give it a dedicated repository:
 
 1. Create a new **empty** repository on GitHub (no README, no `.gitignore`).

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: '%s · GO Intelligence',
   },
   description:
-    'One connected knowledge graph for offshore commercial decisions. Vessels, companies, contracts, projects, infrastructure and market data — by Gemini Offshore.',
+    'One connected knowledge graph for offshore commercial decisions. Vessels, companies, contracts, tenders, infrastructure and market data — by Gemini Offshore.',
   applicationName: 'GO Intelligence',
   authors: [{ name: 'Gemini Offshore' }],
   openGraph: {

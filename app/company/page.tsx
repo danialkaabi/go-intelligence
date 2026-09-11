@@ -52,7 +52,7 @@ const ROADMAP = [
     focus:
       'Lead with the data competitors do not hold — ownership chains, charter history and contracts. Defer live tracking.',
     product: [
-      'Ship Fleet, Companies, Contracts and Projects to production quality',
+      'Ship Fleet, Companies, Contracts and Tenders to production quality',
       'Build the ownership and charter-history dataset — the defensible layer',
       'Positions from free and historical AIS sources; no satellite spend yet',
     ],
@@ -137,7 +137,7 @@ export default function CompanyPage() {
             <p className="lede">
               GO Intelligence provides a single source of truth for offshore
               commercial decision-making — connecting vessels, companies,
-              contracts, projects, infrastructure and market intelligence.
+              contracts, tenders, infrastructure and market intelligence.
             </p>
           </div>
         </div>

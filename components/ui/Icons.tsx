@@ -45,7 +45,7 @@ export const IconContracts = ({ size = 16, strokeWidth = 1.5, className }: IconP
   </svg>
 );
 
-export const IconProjects = ({ size = 16, strokeWidth = 1.5, className }: IconProps) => (
+export const IconTenders = ({ size = 16, strokeWidth = 1.5, className }: IconProps) => (
   <svg {...base(size, strokeWidth)} className={className}>
     <path d="M3.5 20.5V9l5-3.5 5 3.5" />
     <path d="M13.5 20.5V12h7v8.5" />

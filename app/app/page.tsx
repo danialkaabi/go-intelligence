@@ -12,11 +12,11 @@ import {
   IconFleet,
   IconMarket,
   IconPortfolio,
-  IconProjects,
+  IconTenders,
 } from '@/components/ui/Icons';
 import { VESSELS } from '@/data/vessels';
 import { CONTRACTS } from '@/data/contracts';
-import { PROJECTS } from '@/data/projects';
+import { TENDERS } from '@/data/tenders';
 import { ALERTS } from '@/data/alerts';
 import { UTILISATION, RATE_BENCHMARKS } from '@/data/market';
 import { PORTFOLIOS } from '@/data/portfolio';
@@ -29,7 +29,7 @@ export default function DashboardPage() {
   const activeVessels = VESSELS.filter((v) => v.status === 'On Hire').length;
   const openContracts = CONTRACTS.filter((c) => c.status !== 'Completed').length;
   const unread = ALERTS.filter((a) => !a.read);
-  const isEmpty = VESSELS.length === 0 && CONTRACTS.length === 0 && PROJECTS.length === 0;
+  const isEmpty = VESSELS.length === 0 && CONTRACTS.length === 0 && TENDERS.length === 0;
 
   return (
     <>
@@ -68,7 +68,7 @@ export default function DashboardPage() {
                 Every screen is built. Nothing is filled in.
               </h2>
               <p style={{ fontSize: 13.5, color: 'var(--text-4)', lineHeight: 1.65 }}>
-                The dashboard, fleet database, charter book, project pipeline,
+                The dashboard, fleet database, charter book, tender pipeline,
                 map and market screens are all wired to the record files in{' '}
                 <span className="mono" style={{ color: 'var(--blue-300)' }}>
                   /data
@@ -113,13 +113,13 @@ export default function DashboardPage() {
           }
         />
         <StatTile
-          label="Tracked projects"
-          value={PROJECTS.length === 0 ? '—' : PROJECTS.length}
-          empty={PROJECTS.length === 0}
+          label="Tracked tenders"
+          value={TENDERS.length === 0 ? '—' : TENDERS.length}
+          empty={TENDERS.length === 0}
           accent="green"
           foot={
-            PROJECTS.length === 0 ? (
-              <span className="muted">No projects recorded</span>
+            TENDERS.length === 0 ? (
+              <span className="muted">No tenders recorded</span>
             ) : (
               <span className="muted">across the pipeline</span>
             )

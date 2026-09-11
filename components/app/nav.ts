@@ -11,7 +11,7 @@ import {
   IconMaps,
   IconMarket,
   IconPortfolio,
-  IconProjects,
+  IconTenders,
   IconSettings,
 } from '@/components/ui/Icons';
 
@@ -20,7 +20,7 @@ export interface NavItem {
   label: string;
   icon: ComponentType<{ size?: number; className?: string }>;
   /** Shown as a count pill; supplied by the shell from live record counts. */
-  countKey?: 'vessels' | 'companies' | 'contracts' | 'projects' | 'alerts';
+  countKey?: 'vessels' | 'companies' | 'contracts' | 'tenders' | 'alerts';
 }
 
 export interface NavGroup {
@@ -40,7 +40,7 @@ export const NAV: NavGroup[] = [
       { href: '/app/fleet', label: 'Fleet', icon: IconFleet, countKey: 'vessels' },
       { href: '/app/companies', label: 'Companies', icon: IconCompanies, countKey: 'companies' },
       { href: '/app/contracts', label: 'Contracts', icon: IconContracts, countKey: 'contracts' },
-      { href: '/app/projects', label: 'Projects', icon: IconProjects, countKey: 'projects' },
+      { href: '/app/tenders', label: 'Tenders', icon: IconTenders, countKey: 'tenders' },
     ],
   },
   {

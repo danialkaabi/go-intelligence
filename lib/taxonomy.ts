@@ -130,18 +130,18 @@ export const CHARTER_TYPES = [
 ] as const;
 export type CharterType = (typeof CHARTER_TYPES)[number];
 
-/* ---------- Projects ---------- */
+/* ---------- Tenders ---------- */
 
-export const PROJECT_PHASES = [
+export const TENDER_PHASES = [
   'Tender',
   'Awarded',
   'Mobilising',
   'Execution',
   'First Oil',
 ] as const;
-export type ProjectPhase = (typeof PROJECT_PHASES)[number];
+export type TenderPhase = (typeof TENDER_PHASES)[number];
 
-export const PHASE_DESCRIPTIONS: Record<ProjectPhase, string> = {
+export const PHASE_DESCRIPTIONS: Record<TenderPhase, string> = {
   Tender: 'Bids open · vessel scope defined',
   Awarded: 'EPC contractor appointed',
   Mobilising: 'Vessel fixtures being placed',

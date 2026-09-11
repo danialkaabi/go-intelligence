@@ -12,13 +12,13 @@ import {
   IconMaps,
   IconMarket,
   IconMobile,
-  IconProjects,
+  IconTenders,
 } from '@/components/ui/Icons';
 
 export const metadata: Metadata = {
   title: 'Platform',
   description:
-    'Ten modules, one ecosystem. Fleet, Companies, Contracts, Projects, Maps, Market, AI, Alerts, API and App.',
+    'Ten modules, one ecosystem. Fleet, Companies, Contracts, Tenders, Maps, Market, AI, Alerts, API and App.',
 };
 
 const MODULES = [
@@ -63,14 +63,14 @@ const MODULES = [
   },
   {
     n: '04',
-    name: 'GO Projects',
-    tag: 'Project tracking',
-    icon: IconProjects,
-    href: '/app/projects',
+    name: 'GO Tenders',
+    tag: 'Tender tracking',
+    icon: IconTenders,
+    href: '/app/tenders',
     points: [
-      'Field developments, EPC awards and the tender pipeline',
-      'Five phases from tender through to first oil',
-      'CAPEX and forecast vessel demand per project',
+      'Open tenders, field developments and EPC awards',
+      'Five phases from bid through to first oil',
+      'CAPEX and forecast vessel demand per tender',
       'The demand side of the market, not just the supply side',
     ],
   },
@@ -147,7 +147,7 @@ const MODULES = [
     href: '/app',
     points: [
       'Fleet, ownership and charter status on the go',
-      'Push alerts for contract and project milestones',
+      'Push alerts for contract and tender milestones',
       'Offline-ready field and platform maps',
       'AI-summarised briefings each morning',
     ],
@@ -162,7 +162,7 @@ const CYCLE = [
   { step: 'Fix', module: 'GO Contracts', desc: 'Draft terms, reference prior charter history' },
   { step: 'Track', module: 'GO Maps', desc: 'Real-time position once on charter' },
   { step: 'Monitor', module: 'GO Alerts', desc: 'Renewal dates, off-hire events, milestones' },
-  { step: 'Close', module: 'GO Projects', desc: 'Log completion, update charter history' },
+  { step: 'Close', module: 'GO Tenders', desc: 'Log completion, update charter history' },
 ];
 
 export default function PlatformPage() {

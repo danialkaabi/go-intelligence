@@ -8,7 +8,7 @@ import { IconAdmin, IconArrow, IconShield } from '@/components/ui/Icons';
 import { VESSELS } from '@/data/vessels';
 import { COMPANIES } from '@/data/companies';
 import { CONTRACTS } from '@/data/contracts';
-import { PROJECTS } from '@/data/projects';
+import { TENDERS } from '@/data/tenders';
 import { RATE_BENCHMARKS, UTILISATION } from '@/data/market';
 import { ALERTS } from '@/data/alerts';
 import { PORTFOLIOS } from '@/data/portfolio';
@@ -48,13 +48,13 @@ const SOURCES = [
     href: '/app/contracts',
   },
   {
-    name: 'Projects',
-    file: 'data/projects.ts',
-    export: 'PROJECTS',
-    count: PROJECTS.length,
+    name: 'Tenders',
+    file: 'data/tenders.ts',
+    export: 'TENDERS',
+    count: TENDERS.length,
     required: ['id', 'name', 'operator', 'region', 'phase'],
     feeds: 'The phase pipeline, CAPEX totals, vessel demand forecast',
-    href: '/app/projects',
+    href: '/app/tenders',
   },
   {
     name: 'Rate benchmarks',

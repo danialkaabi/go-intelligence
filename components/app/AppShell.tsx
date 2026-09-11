@@ -12,7 +12,7 @@ import { ACCOUNT } from '@/data/account';
 import { VESSELS } from '@/data/vessels';
 import { COMPANIES } from '@/data/companies';
 import { CONTRACTS } from '@/data/contracts';
-import { PROJECTS } from '@/data/projects';
+import { TENDERS } from '@/data/tenders';
 import { ALERTS } from '@/data/alerts';
 
 const TIER_LABEL: Record<string, string> = {
@@ -32,7 +32,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     vessels: VESSELS.length,
     companies: COMPANIES.length,
     contracts: CONTRACTS.length,
-    projects: PROJECTS.length,
+    tenders: TENDERS.length,
     alerts: ALERTS.filter((a) => !a.read).length,
   };
 

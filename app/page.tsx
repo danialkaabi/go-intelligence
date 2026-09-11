@@ -14,7 +14,7 @@ import {
   IconMaps,
   IconMarket,
   IconMobile,
-  IconProjects,
+  IconTenders,
   IconShield,
 } from '@/components/ui/Icons';
 
@@ -23,7 +23,7 @@ const ENTITIES = [
   { label: 'Vessels', icon: IconFleet },
   { label: 'Companies', icon: IconCompanies },
   { label: 'Contracts', icon: IconContracts },
-  { label: 'Projects', icon: IconProjects },
+  { label: 'Tenders', icon: IconTenders },
   { label: 'Infrastructure', icon: IconLayers },
   { label: 'Market Data', icon: IconMarket },
 ];
@@ -60,7 +60,7 @@ const MODULES = [
   { n: '01', name: 'GO Fleet', desc: 'Vessel intelligence and the offshore database — full taxonomy, size class, ownership and AIS in one query.', icon: IconFleet },
   { n: '02', name: 'GO Companies', desc: 'Owners and operators, mapped through seven management tiers, with charter history on every profile.', icon: IconCompanies },
   { n: '03', name: 'GO Contracts', desc: 'The live charter book — expiry countdowns, rate-vs-benchmark variance and renewal exposure.', icon: IconContracts },
-  { n: '04', name: 'GO Projects', desc: 'Field developments, EPC awards, the tender pipeline and vessel demand forecasts.', icon: IconProjects },
+  { n: '04', name: 'GO Tenders', desc: 'The live tender pipeline, plus field developments, EPC awards and vessel demand forecasts.', icon: IconTenders },
   { n: '05', name: 'GO Maps & Layers', desc: 'Spatial intelligence — vessels against fields, concession blocks, platforms and pipelines.', icon: IconMaps },
   { n: '06', name: 'GO Market', desc: 'Day-rate benchmarks across five basins, by vessel type and size class.', icon: IconMarket },
   { n: '07', name: 'GO AI', desc: 'One query answered across every module, from the start to the end of the charter cycle.', icon: IconAI },
@@ -87,7 +87,7 @@ const PIPELINE = [
 ];
 
 const COMPARISON = {
-  cols: ['Fleet / AIS', 'Companies', 'Contracts', 'Projects', 'Infra / Maps', 'Market data', 'Unified graph'],
+  cols: ['Fleet / AIS', 'Companies', 'Contracts', 'Tenders', 'Infra / Maps', 'Market data', 'Unified graph'],
   rows: [
     { name: 'Vessel data platforms', cells: ['y', 'y', 'n', 'n', 'n', 'y', 'n'] },
     { name: 'Trade-flow platforms', cells: ['y', 'p', 'n', 'n', 'n', 'y', 'n'] },
@@ -124,7 +124,7 @@ export default function HomePage() {
             <p className="lede">
               GO Intelligence is a single source of truth for offshore
               commercial decision-making — connecting vessels, companies,
-              contracts, projects, infrastructure and market intelligence in
+              contracts, tenders, infrastructure and market intelligence in
               one live graph.
             </p>
 
