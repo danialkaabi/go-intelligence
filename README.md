@@ -76,6 +76,18 @@ Every push to the default branch redeploys.
 Open **`/app/data`** in the running app. It lists every record type, the
 file it lives in, the fields it requires, and what each one feeds.
 
+### What is already loaded
+
+`data/companies.ts` holds **2,596 companies**, imported from the consolidated
+GO Companies workbook. The source carried company names and — for the 1,485
+still awaiting entity review — a registration country and the reason review
+is outstanding. Nothing else was in the source, so nothing else was written:
+type, headquarters, website, leadership, description, background and fleet
+size are absent rather than guessed, and every profile shows them as "Not
+recorded" until filled in.
+
+Everything else is still empty.
+
 All records live in `/data` as typed arrays:
 
 | File                 | Export                            |

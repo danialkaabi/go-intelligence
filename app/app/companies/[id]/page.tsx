@@ -2,33 +2,71 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageHead from '@/components/app/PageHead';
 import Panel from '@/components/ui/Panel';
-import Badge from '@/components/ui/Badge';
+import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
-import { IconCompanies, IconContracts } from '@/components/ui/Icons';
+import {
+  IconCompanies,
+  IconContracts,
+  IconFleet,
+  IconShield,
+} from '@/components/ui/Icons';
 import { COMPANIES, getCompany } from '@/data/companies';
 import { VESSELS } from '@/data/vessels';
 import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
+import { REVIEW_FLAG_LABELS, REVIEW_RESOLUTION } from '@/lib/review';
 import { orDash, pct } from '@/lib/format';
 
-export const metadata: Metadata = { title: 'Company profile' };
+type Params = { params: { id: string } };
+
+export function generateMetadata({ params }: Params): Metadata {
+  const company = getCompany(params.id);
+  return { title: company ? company.name : 'Company profile' };
+}
 
 export function generateStaticParams() {
   return COMPANIES.map((c) => ({ id: c.id }));
 }
 
-function Spec({ k, v }: { k: string; v?: string | number | null }) {
+function Spec({ k, v, href }: { k: string; v?: string | number | null; href?: string }) {
   const missing = v === undefined || v === null || v === '';
   return (
     <div className="spec">
       <div className="spec-k">{k}</div>
       <div className={`spec-v${missing ? ' spec-v--empty' : ''}`}>
-        {missing ? 'Not recorded' : v}
+        {missing ? (
+          'Not recorded'
+        ) : href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-arrow"
+            style={{ fontSize: 14 }}
+          >
+            {v}
+          </a>
+        ) : (
+          v
+        )}
       </div>
     </div>
   );
 }
 
-export default function CompanyProfilePage({ params }: { params: { id: string } }) {
+/** A prompt shown where a narrative field has not been written yet. */
+function ToFill({ what, field }: { what: string; field: string }) {
+  return (
+    <p style={{ fontSize: 13, color: 'var(--text-4)', lineHeight: 1.7 }}>
+      {what}{' '}
+      <span className="mono" style={{ color: 'var(--blue-400)' }}>
+        {field}
+      </span>{' '}
+      in <span className="mono">data/companies.ts</span>.
+    </p>
+  );
+}
+
+export default function CompanyProfilePage({ params }: Params) {
   const company = getCompany(params.id);
 
   if (!company) {
@@ -47,23 +85,33 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
           <EmptyState
             icon={<IconCompanies size={22} />}
             title={`No company recorded under “${params.id}”`}
-            body="This is the company profile layout: headquarters and founding detail, vessels by role across all seven management tiers, regional presence with utilisation, the fleet list and company-level charter history."
+            body="This is the company profile layout: background and description, leadership, vessels by role across all seven management tiers, regional presence, the fleet list and charter history."
             file="data/companies.ts"
             primaryHref="/app/companies"
             primaryLabel="Back to Companies"
-            fields={['id', 'name', 'type', 'headquarters', 'founded', 'fleetSize', 'tierCounts', 'regionalPresence', 'charterHistory']}
           />
         </Panel>
       </>
     );
   }
 
+  // Vessels attach themselves: any vessel naming this company at any
+  // ownership tier turns up here without a join being maintained by hand.
   const fleet = VESSELS.filter(
     (v) =>
       v.registeredOwnerId === company.id ||
       v.beneficialOwnerId === company.id ||
-      v.operatorId === company.id,
+      v.operatorId === company.id ||
+      v.commercialManagerId === company.id ||
+      v.technicalManagerId === company.id ||
+      v.ismManagerId === company.id,
   );
+
+  const websiteHref = company.website
+    ? company.website.startsWith('http')
+      ? company.website
+      : `https://${company.website}`
+    : undefined;
 
   return (
     <>
@@ -78,36 +126,181 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
       />
 
       <div className="row g10 wrapflex" style={{ marginBottom: 18 }}>
-        <Badge tone="blue">{company.type}</Badge>
+        {company.type ? (
+          <Badge tone="blue">{company.type}</Badge>
+        ) : (
+          <Badge tone="grey">Type not recorded</Badge>
+        )}
         {company.country && <Badge tone="grey">Registered in {company.country}</Badge>}
         {company.founded && <Badge tone="gold">Est. {company.founded}</Badge>}
+        {company.review && (
+          <Badge tone={company.review.confidence === 'low' ? 'red' : 'amber'} dot>
+            Entity review outstanding
+          </Badge>
+        )}
       </div>
 
+      {/* ---------- Entity review ---------- */}
+      {company.review && (
+        <Panel style={{ marginBottom: 16 }}>
+          <div className="panel-body">
+            <div className="row g10" style={{ marginBottom: 10, color: 'var(--amber)' }}>
+              <IconShield size={16} />
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text)' }}>
+                Legal entity not yet confirmed ·{' '}
+                {company.review.confidence === 'low' ? 'Low' : 'Medium'} confidence
+              </span>
+            </div>
+            <ul className="stack g8" style={{ marginBottom: 12 }}>
+              {company.review.flags.map((f) => (
+                <li
+                  key={f}
+                  className="row g10"
+                  style={{ alignItems: 'flex-start', fontSize: 13, color: 'var(--text-3)' }}
+                >
+                  <span
+                    style={{
+                      width: 4,
+                      height: 4,
+                      borderRadius: '50%',
+                      background: 'var(--amber)',
+                      marginTop: 7,
+                      flex: 'none',
+                    }}
+                  />
+                  <span style={{ lineHeight: 1.6 }}>{REVIEW_FLAG_LABELS[f]}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="well">
+              <div className="plan-meta-k" style={{ marginBottom: 6 }}>
+                To resolve
+              </div>
+              <div style={{ fontSize: 12.5, color: 'var(--text-3)' }}>
+                {REVIEW_RESOLUTION}
+              </div>
+            </div>
+          </div>
+        </Panel>
+      )}
+
+      {/* ---------- Profile ---------- */}
       <Panel title="Profile" style={{ marginBottom: 16 }}>
         <div className="spec-grid">
+          <Spec k="Registered country" v={company.country} />
           <Spec k="Headquarters" v={company.headquarters} />
           <Spec k="Founded" v={company.founded} />
-          <Spec k="Fleet size" v={company.fleetSize ? `${company.fleetSize} vessels` : undefined} />
-          <Spec k="Operating regions" v={company.operatingRegions?.join(', ')} />
-          <Spec k="Website" v={company.website} />
+          <Spec k="Company type" v={company.type} />
+          <Spec
+            k="Fleet size"
+            v={company.fleetSize ? `${company.fleetSize} vessels` : undefined}
+          />
           <Spec k="Employees" v={company.employees} />
+          <Spec k="Website" v={company.website} href={websiteHref} />
+          <Spec k="Operating regions" v={company.operatingRegions?.join(', ')} />
         </div>
       </Panel>
 
+      {/* ---------- About ---------- */}
+      <div className="grid grid-2" style={{ marginBottom: 16, alignItems: 'start' }}>
+        <Panel title="About">
+          <div className="panel-body stack g16">
+            <div>
+              <div className="plan-meta-k" style={{ marginBottom: 8 }}>
+                Description
+              </div>
+              {company.description ? (
+                <p style={{ fontSize: 13.5, color: 'var(--text-2)', lineHeight: 1.7 }}>
+                  {company.description}
+                </p>
+              ) : (
+                <ToFill what="A sentence or two on what this company is and does. Add" field="description" />
+              )}
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16 }}>
+              <div className="plan-meta-k" style={{ marginBottom: 8 }}>
+                Background
+              </div>
+              {company.background ? (
+                <p style={{ fontSize: 13.5, color: 'var(--text-2)', lineHeight: 1.7 }}>
+                  {company.background}
+                </p>
+              ) : (
+                <ToFill
+                  what="History, ownership and market position — the longer narrative. Add"
+                  field="background"
+                />
+              )}
+            </div>
+          </div>
+        </Panel>
+
+        <Panel title="Leadership">
+          <div className="panel-body">
+            {company.leadership && company.leadership.length > 0 ? (
+              <div className="stack g12">
+                {company.leadership.map((p) => (
+                  <div className="well row g12" key={`${p.name}-${p.role}`}>
+                    <span
+                      className="avatar"
+                      style={{ width: 36, height: 36, fontSize: 12 }}
+                    >
+                      {p.name
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0]?.toUpperCase())
+                        .join('')}
+                    </span>
+                    <div>
+                      <div style={{ fontSize: 13.5, color: 'var(--text)', fontWeight: 600 }}>
+                        {p.name}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-5)', marginTop: 2 }}>
+                        {p.role}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ToFill
+                what="Chief executive, managing director, chairman — whoever you deal with. Add"
+                field="leadership"
+              />
+            )}
+          </div>
+        </Panel>
+      </div>
+
+      {/* ---------- Management tiers ---------- */}
       <Panel title="Management structure · vessels by role" style={{ marginBottom: 16 }}>
         <div className="panel-body">
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(146px, 1fr))', gap: 12 }}>
+          <div
+            className="grid"
+            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(146px, 1fr))', gap: 12 }}
+          >
             {MANAGEMENT_TIERS.map((tier) => {
               const count = company.tierCounts?.[tier];
               return (
                 <div className="well" key={tier}>
                   <div
                     className="num"
-                    style={{ fontSize: 24, color: count === undefined ? 'var(--text-5)' : 'var(--text)' }}
+                    style={{
+                      fontSize: 24,
+                      color: count === undefined ? 'var(--text-5)' : 'var(--text)',
+                    }}
                   >
                     {count ?? '—'}
                   </div>
-                  <div style={{ fontSize: 11.5, color: 'var(--text-4)', marginTop: 6, lineHeight: 1.45 }}>
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      color: 'var(--text-4)',
+                      marginTop: 6,
+                      lineHeight: 1.45,
+                    }}
+                  >
                     {tier}
                   </div>
                 </div>
@@ -117,13 +310,14 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
         </div>
       </Panel>
 
-      <div className="grid grid-2" style={{ marginBottom: 16 }}>
+      <div className="grid grid-2" style={{ marginBottom: 16, alignItems: 'start' }}>
         <Panel title="Regional presence">
           <div className="panel-body">
             {!company.regionalPresence || company.regionalPresence.length === 0 ? (
-              <p className="muted" style={{ fontSize: 13 }}>
-                No regional presence recorded.
-              </p>
+              <ToFill
+                what="Vessel count and utilisation per basin. Add"
+                field="regionalPresence"
+              />
             ) : (
               <div className="stack g16">
                 {company.regionalPresence.map((r) => (
@@ -147,13 +341,29 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
           </div>
         </Panel>
 
-        <Panel title={`Fleet list${fleet.length ? ` · ${fleet.length}` : ''}`}>
+        <Panel
+          title={`Fleet${fleet.length ? ` · ${fleet.length}` : ''}`}
+          action={
+            fleet.length > 0 ? (
+              <Link href="/app/fleet" className="link-arrow" style={{ fontSize: 12 }}>
+                GO Fleet
+              </Link>
+            ) : undefined
+          }
+        >
           {fleet.length === 0 ? (
             <div className="panel-body">
-              <p className="muted" style={{ fontSize: 13 }}>
-                No vessels in the database reference this company. Set{' '}
-                <span className="mono">registeredOwnerId</span> on a vessel to{' '}
-                <span className="mono">&quot;{company.id}&quot;</span> and it appears here.
+              <p style={{ fontSize: 13, color: 'var(--text-4)', lineHeight: 1.7 }}>
+                No vessels in the database name this company. Vessels attach
+                themselves — set a vessel&rsquo;s{' '}
+                <span className="mono" style={{ color: 'var(--blue-400)' }}>
+                  registeredOwnerId
+                </span>{' '}
+                (or any other ownership tier) to{' '}
+                <span className="mono" style={{ color: 'var(--blue-400)' }}>
+                  &quot;{company.id}&quot;
+                </span>{' '}
+                and it appears here.
               </p>
             </div>
           ) : (
@@ -173,9 +383,13 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
                       <td className="td-strong">
                         <Link href={`/app/fleet/${v.imo}`}>{v.name}</Link>
                       </td>
-                      <td>{v.subType}</td>
+                      <td>{orDash(v.sizeClass ?? v.subType)}</td>
                       <td>{orDash(v.region)}</td>
-                      <td>{v.status}</td>
+                      <td>
+                        <Badge tone={statusTone(v.status)} dot>
+                          {v.status}
+                        </Badge>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -185,6 +399,7 @@ export default function CompanyProfilePage({ params }: { params: { id: string } 
         </Panel>
       </div>
 
+      {/* ---------- Charter history ---------- */}
       <Panel title="Charter history · company level">
         {!company.charterHistory || company.charterHistory.length === 0 ? (
           <EmptyState

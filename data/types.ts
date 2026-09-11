@@ -138,11 +138,35 @@ export interface RegionalPresence {
   utilisationPct?: number;
 }
 
+/** Why a company still needs exact-entity review, carried over from the
+ *  source list so the uncertainty travels with the record. */
+export type ReviewFlag =
+  /** Generic or abbreviated name may match multiple legal entities. */
+  | 'ambiguous-name'
+  /** No readable flag; exact legal entity not uniquely confirmed. */
+  | 'no-flag'
+  /** OCR spelling was normalised and should be checked against an
+   *  official name. */
+  | 'ocr-normalised';
+
+export interface EntityReview {
+  confidence: 'low' | 'medium';
+  flags: ReviewFlag[];
+}
+
+export interface Leader {
+  name: string;
+  /** e.g. "Chief Executive Officer", "Managing Director". */
+  role: string;
+}
+
 export interface Company {
   /** URL-safe unique id, e.g. "falcon-marine". */
   id: string;
   name: string;
-  type: CompanyType;
+  /** Optional: the imported list carries names and countries only, so most
+   *  records have no type until one is recorded. */
+  type?: CompanyType;
 
   country?: string;
   headquarters?: string;
@@ -151,6 +175,13 @@ export interface Company {
   fleetSize?: number;
   employees?: number;
   parentCompanyId?: string;
+
+  /** One or two sentences — what the company is and does. */
+  description?: string;
+  /** The longer narrative: history, ownership, market position. */
+  background?: string;
+  /** CEO, Managing Director, Chairman and so on. */
+  leadership?: Leader[];
 
   operatingRegions?: Region[];
   tierCounts?: TierCounts;
@@ -162,6 +193,9 @@ export interface Company {
   logoUrl?: string;
   notes?: string;
   provenance?: Provenance;
+
+  /** Present while the legal entity behind this name is still unconfirmed. */
+  review?: EntityReview;
 }
 
 /* ---------- Contract ---------- */
