@@ -14,7 +14,6 @@ import {
   IconSearch,
 } from '@/components/ui/Icons';
 import { COMPANIES, COMPANY_COUNTRIES } from '@/data/companies';
-import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
 import { REVIEW_FLAG_SHORT } from '@/lib/review';
 import { num, orDash } from '@/lib/format';
 
@@ -24,20 +23,23 @@ export default function CompaniesClient() {
   const [query, setQuery] = useState('');
   const [country, setCountry] = useState('');
   const [reviewOnly, setReviewOnly] = useState(false);
+  const [profiledOnly, setProfiledOnly] = useState(false);
   const [page, setPage] = useState(0);
 
   const withCountry = COMPANIES.filter((c) => c.country).length;
   const needingReview = COMPANIES.filter((c) => c.review).length;
+  const profiled = COMPANIES.filter((c) => c.description).length;
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return COMPANIES.filter((c) => {
       if (country && c.country !== country) return false;
       if (reviewOnly && !c.review) return false;
+      if (profiledOnly && !c.description) return false;
       if (needle && !c.name.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [query, country, reviewOnly]);
+  }, [query, country, reviewOnly, profiledOnly]);
 
   const pageCount = Math.max(1, Math.ceil(results.length / PER_PAGE));
   const current = Math.min(page, pageCount - 1);
@@ -83,10 +85,15 @@ export default function CompaniesClient() {
           foot={<span className="muted">Legal entity unconfirmed</span>}
         />
         <StatTile
-          label="Management tiers"
-          value={MANAGEMENT_TIERS.length}
+          label="Profiled"
+          value={num(profiled)}
           accent="gold"
-          foot={<span className="muted">Beneficial owner → ISM manager</span>}
+          empty={profiled === 0}
+          foot={
+            <span className="muted">
+              Description, leadership &amp; source recorded
+            </span>
+          }
         />
       </div>
 
@@ -128,7 +135,14 @@ export default function CompaniesClient() {
           Needs review
         </button>
 
-        {(query || country || reviewOnly) && (
+        <button
+          className={`btn btn--sm ${profiledOnly ? 'btn--primary' : 'btn--ghost'}`}
+          onClick={() => reset(setProfiledOnly)(!profiledOnly)}
+        >
+          Profiled
+        </button>
+
+        {(query || country || reviewOnly || profiledOnly) && (
           <button
             className="link-arrow"
             style={{ fontSize: 12.5 }}
@@ -136,6 +150,7 @@ export default function CompaniesClient() {
               setQuery('');
               setCountry('');
               setReviewOnly(false);
+              setProfiledOnly(false);
               setPage(0);
             }}
           >
@@ -172,6 +187,7 @@ export default function CompaniesClient() {
                     <th>Type</th>
                     <th>Country</th>
                     <th className="th-num">Fleet size</th>
+                    <th>Profile</th>
                     <th>Entity review</th>
                   </tr>
                 </thead>
@@ -196,6 +212,15 @@ export default function CompaniesClient() {
                       </td>
                       <td>{orDash(c.country)}</td>
                       <td className="td-num">{orDash(c.fleetSize)}</td>
+                      <td>
+                        {c.description ? (
+                          <Badge tone="green" dot>
+                            Profiled
+                          </Badge>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                      </td>
                       <td>
                         {c.review ? (
                           <Badge

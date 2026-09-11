@@ -196,6 +196,11 @@ export interface Company {
 
   /** Present while the legal entity behind this name is still unconfirmed. */
   review?: EntityReview;
+
+  /** Set when this record looks like a second entry for another company.
+   *  Both records are kept — merging is a decision for whoever owns the
+   *  data, not something an import should do silently. */
+  duplicateOfId?: string;
 }
 
 /* ---------- Contract ---------- */

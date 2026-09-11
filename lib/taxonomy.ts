@@ -149,6 +149,7 @@ export const PHASE_DESCRIPTIONS: Record<ProjectPhase, string> = {
 
 export const COMPANY_TYPES = [
   'OSV Owner / Operator',
+  'Marine Logistics Provider',
   'National Oil Company',
   'International Oil Company',
   'EPC Contractor',

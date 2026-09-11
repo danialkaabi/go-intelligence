@@ -107,6 +107,10 @@ export default function CompanyProfilePage({ params }: Params) {
       v.ismManagerId === company.id,
   );
 
+  const duplicateOf = company.duplicateOfId
+    ? getCompany(company.duplicateOfId)
+    : undefined;
+
   const websiteHref = company.website
     ? company.website.startsWith('http')
       ? company.website
@@ -138,7 +142,32 @@ export default function CompanyProfilePage({ params }: Params) {
             Entity review outstanding
           </Badge>
         )}
+        {company.duplicateOfId && <Badge tone="red" dot>Suspected duplicate</Badge>}
+        {company.provenance && <Badge tone="green" dot>Profiled</Badge>}
       </div>
+
+      {/* ---------- Suspected duplicate ---------- */}
+      {duplicateOf && (
+        <Panel style={{ marginBottom: 16 }}>
+          <div className="panel-body between wrapflex">
+            <div style={{ maxWidth: '70ch' }}>
+              <div className="row g10" style={{ marginBottom: 8, color: 'var(--red)' }}>
+                <IconCompanies size={16} />
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text)' }}>
+                  Looks like a second entry for {duplicateOf.name}
+                </span>
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.65 }}>
+                Both records are kept. Merging them is a decision for whoever
+                owns the data, not something an import should do silently.
+              </p>
+            </div>
+            <Link href={`/app/companies/${duplicateOf.id}`} className="btn btn--ghost btn--sm">
+              Open {duplicateOf.name}
+            </Link>
+          </div>
+        </Panel>
+      )}
 
       {/* ---------- Entity review ---------- */}
       {company.review && (
@@ -398,6 +427,73 @@ export default function CompanyProfilePage({ params }: Params) {
           )}
         </Panel>
       </div>
+
+      {/* ---------- Record notes and source ---------- */}
+      {(company.notes || company.provenance) && (
+        <Panel title="Record" style={{ marginBottom: 16 }}>
+          <div className="panel-body stack g14">
+            {company.notes && (
+              <div>
+                <div className="plan-meta-k" style={{ marginBottom: 7 }}>
+                  Notes
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.7 }}>
+                  {company.notes}
+                </p>
+              </div>
+            )}
+
+            {company.provenance && (
+              <div
+                style={
+                  company.notes
+                    ? { borderTop: '1px solid var(--line)', paddingTop: 14 }
+                    : undefined
+                }
+              >
+                <div className="plan-meta-k" style={{ marginBottom: 7 }}>
+                  Source
+                </div>
+                <div className="row g10 wrapflex">
+                  {company.provenance.url ? (
+                    <a
+                      href={company.provenance.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-arrow"
+                      style={{ fontSize: 13 }}
+                    >
+                      {company.provenance.source}
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: 13, color: 'var(--text-2)' }}>
+                      {company.provenance.source}
+                    </span>
+                  )}
+                  {company.provenance.confidence && (
+                    <Badge
+                      tone={
+                        company.provenance.confidence === 'low'
+                          ? 'red'
+                          : company.provenance.confidence === 'medium'
+                            ? 'amber'
+                            : 'green'
+                      }
+                    >
+                      {company.provenance.confidence} confidence
+                    </Badge>
+                  )}
+                  {company.provenance.retrievedAt && (
+                    <span className="mono" style={{ fontSize: 11.5, color: 'var(--text-5)' }}>
+                      Retrieved {company.provenance.retrievedAt}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </Panel>
+      )}
 
       {/* ---------- Charter history ---------- */}
       <Panel title="Charter history · company level">
