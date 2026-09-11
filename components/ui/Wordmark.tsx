@@ -1,32 +1,40 @@
 import Link from 'next/link';
+import Logo from './Logo';
 
 /**
- * The Gemini Offshore / GO Intelligence lockup.
+ * The Gemini Offshore / GO Intelligence lockup: the GO monogram alongside
+ * the wide-tracked uppercase setting used throughout the strategy book.
  *
- * The wide-tracked uppercase setting is the brand's most recognisable
- * signature — it is how both marks are set throughout the strategy book,
- * and it is reproduced here rather than reinterpreted.
+ * The mark inherits `currentColor`, so the lockup renders navy on the white
+ * marketing nav and white on the dark app sidebar from a single component.
  */
 export default function Wordmark({
   href = '/',
   size = 'md',
   stacked = true,
+  mark = true,
 }: {
   href?: string | null;
   size?: 'sm' | 'md' | 'lg';
   stacked?: boolean;
+  /** Set false where the monogram would crowd the text. */
+  mark?: boolean;
 }) {
-  const markClass =
-    size === 'lg' ? 'wordmark wordmark--lg' : size === 'sm' ? 'wordmark wordmark--sm' : 'wordmark';
+  const markSize = size === 'lg' ? 34 : size === 'sm' ? 19 : 25;
+  const textSize = size === 'lg' ? 16 : size === 'sm' ? 9.5 : 10.5;
 
   const inner = (
-    <span className="stack" style={{ gap: stacked ? 3 : 0 }}>
-      <span className={markClass} style={{ fontSize: size === 'md' ? 13 : undefined }}>
-        GO Intelligence
+    <span className="lockup">
+      {mark && <Logo size={markSize} className="lockup-mark" />}
+      <span className="lockup-text">
+        <span
+          className="wordmark"
+          style={{ fontSize: textSize, letterSpacing: '0.2em' }}
+        >
+          GO Intelligence
+        </span>
+        {stacked && <span className="lockup-sub">Gemini Offshore</span>}
       </span>
-      {stacked && (
-        <span className="shell-brand-sub">Gemini Offshore</span>
-      )}
     </span>
   );
 

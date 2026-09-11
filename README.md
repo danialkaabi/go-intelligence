@@ -144,6 +144,28 @@ for, which fields a record carries, and which file to add it to.
 
 ---
 
+## The logo
+
+`components/ui/Logo.tsx` is the GO monogram, drawn as inline SVG using
+`currentColor`. That is what lets one component serve every surface: it
+renders navy on the white marketing nav and white on the dark app sidebar,
+with no second asset and no CSS filters.
+
+It is a **reconstruction** of the Gemini Offshore mark, redrawn from the
+brand artwork rather than exported from it. To drop in the authentic file:
+
+1. Put your artwork in `public/` (e.g. `public/logo.svg`).
+2. Replace the body of `components/ui/Logo.tsx` with an `<img>` or an
+   inline copy of your SVG.
+
+If you use a single-colour SVG, keep `fill="currentColor"` on its paths and
+the automatic light/dark inversion keeps working. If you use a PNG with a
+fixed colour, you will need a second white version for the sidebar.
+
+The lockup that pairs the mark with the text is `components/ui/Wordmark.tsx`.
+
+---
+
 ## Structure
 
 ```
