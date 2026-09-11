@@ -55,7 +55,7 @@ export default function DashboardPage() {
           style={{
             marginBottom: 20,
             background:
-              'linear-gradient(178deg, rgba(95,168,232,0.08), transparent 60%), var(--navy-800)',
+              'linear-gradient(178deg, rgba(32,119,194,0.07), transparent 60%), var(--surface)',
             borderColor: 'var(--line-2)',
           }}
         >

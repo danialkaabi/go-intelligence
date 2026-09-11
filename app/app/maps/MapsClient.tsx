@@ -21,7 +21,7 @@ function MapCanvas({ empty }: { empty: boolean }) {
         aspectRatio: '16 / 9',
         minHeight: 340,
         background:
-          'radial-gradient(ellipse 70% 60% at 50% 40%, #12203a, #0a1220 70%)',
+          'radial-gradient(ellipse 70% 60% at 50% 40%, #eaf1fa, #dce7f4 72%)',
         borderRadius: 'var(--r-lg)',
         overflow: 'hidden',
         border: '1px solid var(--line)',
@@ -37,7 +37,7 @@ function MapCanvas({ empty }: { empty: boolean }) {
             <path
               d="M62 0H0v62"
               fill="none"
-              stroke="rgba(95,168,232,0.10)"
+              stroke="rgba(32,119,194,0.16)"
               strokeWidth="1"
             />
           </pattern>
@@ -48,22 +48,22 @@ function MapCanvas({ empty }: { empty: boolean }) {
         <path
           d="M-20 260 C 120 210, 210 300, 340 250 S 560 180, 700 230 S 880 300, 1040 245"
           fill="none"
-          stroke="rgba(95,168,232,0.2)"
+          stroke="rgba(32,119,194,0.35)"
           strokeWidth="1.5"
           strokeDasharray="5 7"
         />
         <rect
           x="28%" y="26%" width="26%" height="34%"
-          fill="rgba(95,168,232,0.05)"
-          stroke="rgba(95,168,232,0.24)"
+          fill="rgba(32,119,194,0.07)"
+          stroke="rgba(32,119,194,0.4)"
           strokeWidth="1"
           strokeDasharray="4 5"
           rx="3"
         />
         <rect
           x="58%" y="40%" width="20%" height="26%"
-          fill="rgba(214,164,78,0.04)"
-          stroke="rgba(214,164,78,0.22)"
+          fill="rgba(201,148,47,0.09)"
+          stroke="rgba(201,148,47,0.45)"
           strokeWidth="1"
           strokeDasharray="4 5"
           rx="3"
@@ -85,7 +85,7 @@ function MapCanvas({ empty }: { empty: boolean }) {
       >
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path d="M12 3 L15 13 L12 11 L9 13 Z" fill="var(--blue-400)" />
-          <circle cx="12" cy="12" r="9" stroke="rgba(95,168,232,0.3)" strokeWidth="1" />
+          <circle cx="12" cy="12" r="9" stroke="rgba(32,119,194,0.4)" strokeWidth="1" />
         </svg>
         N
       </div>
@@ -143,7 +143,7 @@ function MapCanvas({ empty }: { empty: boolean }) {
             style={{
               textAlign: 'center',
               maxWidth: 400,
-              background: 'rgba(10,15,26,0.82)',
+              background: 'rgba(255,255,255,0.9)',
               backdropFilter: 'blur(6px)',
               border: '1px solid var(--line-2)',
               borderRadius: 'var(--r-lg)',
@@ -247,7 +247,7 @@ export default function MapsClient() {
                 >
                   <span className="checkbox">
                     {active.includes(l.id) && (
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#04121f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="m4.5 12.5 5 5 10-11" />
                       </svg>
                     )}

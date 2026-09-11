@@ -113,7 +113,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap wrap-narrow">
           <div className="section-head">
             <span className="eyebrow">Questions</span>

@@ -107,11 +107,11 @@ export default function AIClient() {
               <div
                 className="well"
                 style={{
-                  borderColor: 'rgba(214,164,78,0.3)',
-                  background: 'rgba(214,164,78,0.05)',
+                  borderColor: 'rgba(201,148,47,0.4)',
+                  background: 'rgba(201,148,47,0.08)',
                 }}
               >
-                <div className="row g10" style={{ marginBottom: 10, color: 'var(--gold)' }}>
+                <div className="row g10" style={{ marginBottom: 10, color: 'var(--gold-ink)' }}>
                   <IconAI size={16} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
                     {hasRecords ? 'Model not connected' : 'No records to reason over'}

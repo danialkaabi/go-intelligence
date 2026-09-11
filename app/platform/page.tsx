@@ -217,7 +217,7 @@ export default function PlatformPage() {
       </section>
 
       {/* ---------- Module detail ---------- */}
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap">
           <div className="section-head">
             <span className="eyebrow">Every module</span>

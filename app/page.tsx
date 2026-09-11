@@ -180,7 +180,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- Solution ---------- */}
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap">
           <div className="section-head">
             <span className="eyebrow">02 · The solution</span>
@@ -239,7 +239,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- Data & technology ---------- */}
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap">
           <div className="section-head">
             <span className="eyebrow">04 · Data & technology</span>
@@ -345,7 +345,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- Differentiators ---------- */}
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap">
           <div className="section-head">
             <span className="eyebrow">06 · Why we are different</span>

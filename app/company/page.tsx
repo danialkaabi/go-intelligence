@@ -186,7 +186,7 @@ export default function CompanyPage() {
       </section>
 
       {/* ---------- Roadmap ---------- */}
-      <section className="section" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap">
           <div className="section-head">
             <span className="eyebrow">Go-to-market roadmap</span>
@@ -294,7 +294,7 @@ export default function CompanyPage() {
       </section>
 
       {/* ---------- Contact ---------- */}
-      <section className="section" id="contact" style={{ background: 'var(--navy-870)', borderBlock: '1px solid var(--line)' }}>
+      <section className="section" id="contact" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="wrap wrap-narrow">
           <div className="section-head">
             <span className="eyebrow">Contact</span>

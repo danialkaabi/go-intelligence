@@ -67,7 +67,7 @@ function Option({
     <button className={`rail-opt${on ? ' is-on' : ''}`} onClick={onToggle}>
       <span className="checkbox">
         {on && (
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#04121f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="m4.5 12.5 5 5 10-11" />
           </svg>
         )}
