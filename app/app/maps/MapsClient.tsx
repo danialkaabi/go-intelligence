@@ -279,7 +279,7 @@ export default function MapsClient() {
             ) : (
               <div>
                 {positioned.map((v) => (
-                  <div className="feed-item" key={v.imo}>
+                  <div className="feed-item" key={v.id}>
                     <span className="feed-mark">
                       <IconMaps size={14} />
                     </span>

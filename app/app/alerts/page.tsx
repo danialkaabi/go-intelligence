@@ -69,7 +69,7 @@ export default function AlertsPage() {
             title="No alerts"
             body="Nothing needs your attention — because nothing is being watched yet. Alerts generate from contracts, positions and benchmarks once those records exist."
             file="data/alerts.ts"
-            fields={['id', 'type', 'severity', 'title', 'body', 'createdAt', 'vesselImo', 'contractId']}
+            fields={['id', 'type', 'severity', 'title', 'body', 'createdAt', 'vesselId', 'contractId']}
           />
         ) : (
           <div>

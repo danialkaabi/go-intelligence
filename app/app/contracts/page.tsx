@@ -99,7 +99,7 @@ export default function ContractsPage() {
             file="data/contracts.ts"
             fields={[
               'id',
-              'vesselImo',
+              'vesselId',
               'vesselName',
               'charterer',
               'charterType',
@@ -136,7 +136,7 @@ export default function ContractsPage() {
                   return (
                     <tr key={c.id}>
                       <td className="td-strong">
-                        <Link href={`/app/fleet/${c.vesselImo}`}>{c.vesselName}</Link>
+                        <Link href={`/app/fleet/${c.vesselId}`}>{c.vesselName}</Link>
                       </td>
                       <td>{c.vesselType}</td>
                       <td>{c.charterer}</td>

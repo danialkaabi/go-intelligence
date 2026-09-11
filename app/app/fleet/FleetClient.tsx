@@ -6,6 +6,7 @@ import PageHead from '@/components/app/PageHead';
 import Panel from '@/components/ui/Panel';
 import EmptyState from '@/components/ui/EmptyState';
 import Badge, { statusTone } from '@/components/ui/Badge';
+import { VesselThumb } from '@/components/ui/VesselPhoto';
 import {
   IconChevron,
   IconClose,
@@ -133,7 +134,7 @@ export default function FleetClient() {
       if (!needle) return true;
       return (
         v.name.toLowerCase().includes(needle) ||
-        v.imo.includes(needle) ||
+        (v.imo ?? '').includes(needle) ||
         (v.mmsi ?? '').includes(needle)
       );
     });
@@ -342,6 +343,7 @@ export default function FleetClient() {
                 <table className="table">
                   <thead>
                     <tr>
+                      <th />
                       <th>Vessel</th>
                       <th>IMO</th>
                       <th>Size class</th>
@@ -353,21 +355,28 @@ export default function FleetClient() {
                   </thead>
                   <tbody>
                     {results.map((v) => (
-                      <tr key={v.imo}>
+                      <tr key={v.id}>
+                        <td style={{ width: 44, paddingRight: 0 }}>
+                          <VesselThumb src={v.photoUrl} name={v.name} />
+                        </td>
                         <td className="td-strong">
-                          <Link href={`/app/fleet/${v.imo}`} className="link-arrow" style={{ fontSize: 13 }}>
+                          <Link href={`/app/fleet/${v.id}`} className="link-arrow" style={{ fontSize: 13 }}>
                             {v.name}
                           </Link>
                         </td>
-                        <td className="mono">{v.imo}</td>
+                        <td className="mono">{orDash(v.imo)}</td>
                         <td>{orDash(v.sizeClass ?? v.subType)}</td>
                         <td>{orDash(companyName(v.registeredOwnerId))}</td>
                         <td>{orDash(v.region)}</td>
                         <td className="td-num">{orDash(v.position?.daysInZone)}</td>
                         <td>
-                          <Badge tone={statusTone(v.status)} dot>
-                            {v.status}
-                          </Badge>
+                          {v.status ? (
+                            <Badge tone={statusTone(v.status)} dot>
+                              {v.status}
+                            </Badge>
+                          ) : (
+                            <span className="muted">—</span>
+                          )}
                         </td>
                       </tr>
                     ))}

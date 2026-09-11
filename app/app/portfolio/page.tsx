@@ -69,15 +69,15 @@ export default function PortfolioPage() {
                     </thead>
                     <tbody>
                       {p.entries.map((e) => {
-                        const v = getVessel(e.vesselImo);
+                        const v = getVessel(e.vesselId);
                         return (
-                          <tr key={e.vesselImo}>
+                          <tr key={e.vesselId}>
                             <td className="td-strong">
-                              <Link href={`/app/fleet/${e.vesselImo}`}>
-                                {v?.name ?? `IMO ${e.vesselImo}`}
+                              <Link href={`/app/fleet/${e.vesselId}`}>
+                                {v?.name ?? e.vesselId}
                               </Link>
                             </td>
-                            <td className="mono">{e.vesselImo}</td>
+                            <td className="mono">{orDash(v?.imo)}</td>
                             <td>{orDash(v?.subType)}</td>
                             <td>
                               {v ? (

@@ -6,7 +6,7 @@ import type { Contract } from './types';
  * Empty by design. Add fixtures here and the charter book, expiry
  * countdowns, renewal-exposure chart and contract KPIs populate.
  *
- * Minimum required fields: id, vesselImo, vesselName, vesselType,
+ * Minimum required fields: id, vesselId, vesselName, vesselType,
  * charterer, charterType, status.
  * See data/types.ts for the full schema.
  */

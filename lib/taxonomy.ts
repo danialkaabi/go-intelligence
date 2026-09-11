@@ -29,8 +29,12 @@ export const VESSEL_SUBTYPES: Record<VesselCategory, string[]> = {
     'Crew Boat',
     'Standby / ERRV',
     'Ocean Going Tug',
+    'Utility Vessel',
   ],
   OCV: [
+    'Multipurpose Support (MPSV)',
+    'Maintenance / Work Vessel',
+    'Accommodation / Flotel',
     'Construction Support',
     'Dive Support (DSV)',
     'Well Intervention',

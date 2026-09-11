@@ -43,7 +43,7 @@ const SOURCES = [
     file: 'data/contracts.ts',
     export: 'CONTRACTS',
     count: CONTRACTS.length,
-    required: ['id', 'vesselImo', 'vesselName', 'charterer', 'charterType', 'status'],
+    required: ['id', 'vesselId', 'vesselName', 'charterer', 'charterType', 'status'],
     feeds: 'The charter book, expiry countdowns, renewal exposure',
     href: '/app/contracts',
   },

@@ -4,6 +4,7 @@ import PageHead from '@/components/app/PageHead';
 import Panel from '@/components/ui/Panel';
 import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
+import { VesselThumb } from '@/components/ui/VesselPhoto';
 import {
   IconCompanies,
   IconContracts,
@@ -11,7 +12,7 @@ import {
   IconShield,
 } from '@/components/ui/Icons';
 import { COMPANIES, getCompany } from '@/data/companies';
-import { VESSELS } from '@/data/vessels';
+import { tierCountsForCompany, vesselsForCompany } from '@/data/vessels';
 import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
 import { REVIEW_FLAG_LABELS, REVIEW_RESOLUTION } from '@/lib/review';
 import { orDash, pct } from '@/lib/format';
@@ -97,15 +98,11 @@ export default function CompanyProfilePage({ params }: Params) {
 
   // Vessels attach themselves: any vessel naming this company at any
   // ownership tier turns up here without a join being maintained by hand.
-  const fleet = VESSELS.filter(
-    (v) =>
-      v.registeredOwnerId === company.id ||
-      v.beneficialOwnerId === company.id ||
-      v.operatorId === company.id ||
-      v.commercialManagerId === company.id ||
-      v.technicalManagerId === company.id ||
-      v.ismManagerId === company.id,
-  );
+  const fleet = vesselsForCompany(company.id);
+
+  // Counts come from the vessel records themselves; a hand-entered
+  // tierCounts still wins, for companies whose fleet is not all loaded.
+  const derivedTiers = tierCountsForCompany(company.id);
 
   const duplicateOf = company.duplicateOfId
     ? getCompany(company.duplicateOfId)
@@ -310,7 +307,7 @@ export default function CompanyProfilePage({ params }: Params) {
             style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(146px, 1fr))', gap: 12 }}
           >
             {MANAGEMENT_TIERS.map((tier) => {
-              const count = company.tierCounts?.[tier];
+              const count = company.tierCounts?.[tier] ?? derivedTiers[tier];
               return (
                 <div className="well" key={tier}>
                   <div
@@ -336,6 +333,16 @@ export default function CompanyProfilePage({ params }: Params) {
               );
             })}
           </div>
+          {!company.tierCounts && Object.keys(derivedTiers).length > 0 && (
+            <p className="muted" style={{ fontSize: 12, marginTop: 14 }}>
+              Counted from the vessel records naming this company. Set{' '}
+              <span className="mono" style={{ color: 'var(--blue-400)' }}>
+                tierCounts
+              </span>{' '}
+              on the company to state the full picture where its fleet is not
+              all loaded.
+            </p>
+          )}
         </div>
       </Panel>
 
@@ -371,7 +378,11 @@ export default function CompanyProfilePage({ params }: Params) {
         </Panel>
 
         <Panel
-          title={`Fleet${fleet.length ? ` · ${fleet.length}` : ''}`}
+          title={`Fleet${
+            fleet.length
+              ? ` · ${fleet.length}${company.fleetSize ? ` of ${company.fleetSize} recorded` : ''}`
+              : ''
+          }`}
           action={
             fleet.length > 0 ? (
               <Link href="/app/fleet" className="link-arrow" style={{ fontSize: 12 }}>
@@ -400,6 +411,7 @@ export default function CompanyProfilePage({ params }: Params) {
               <table className="table">
                 <thead>
                   <tr>
+                    <th />
                     <th>Vessel</th>
                     <th>Type</th>
                     <th>Region</th>
@@ -408,16 +420,23 @@ export default function CompanyProfilePage({ params }: Params) {
                 </thead>
                 <tbody>
                   {fleet.map((v) => (
-                    <tr key={v.imo}>
+                    <tr key={v.id}>
+                      <td style={{ width: 44, paddingRight: 0 }}>
+                        <VesselThumb src={v.photoUrl} name={v.name} />
+                      </td>
                       <td className="td-strong">
-                        <Link href={`/app/fleet/${v.imo}`}>{v.name}</Link>
+                        <Link href={`/app/fleet/${v.id}`}>{v.name}</Link>
                       </td>
                       <td>{orDash(v.sizeClass ?? v.subType)}</td>
                       <td>{orDash(v.region)}</td>
                       <td>
-                        <Badge tone={statusTone(v.status)} dot>
-                          {v.status}
-                        </Badge>
+                        {v.status ? (
+                          <Badge tone={statusTone(v.status)} dot>
+                            {v.status}
+                          </Badge>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
                       </td>
                     </tr>
                   ))}

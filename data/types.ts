@@ -63,18 +63,27 @@ export interface CharterRecord {
 }
 
 export interface Vessel {
-  /** IMO number — the primary key for a vessel. */
-  imo: string;
+  /** URL-safe unique id, e.g. "astro-arcturus" — the primary key.
+   *
+   *  Not the IMO: plenty of real spec sheets carry no IMO number, and some
+   *  craft never receive one, so the key cannot depend on it. */
+  id: string;
   name: string;
   category: VesselCategory;
   /** e.g. "AHTS", "PSV". Must be a sub-type of `category`. */
   subType: string;
   /** e.g. "AHTS (Large)". */
   sizeClass?: string;
-  status: VesselStatus;
+  /** Optional: a builder's spec sheet says nothing about commercial status,
+   *  so a vessel can be recorded long before its status is known. */
+  status?: VesselStatus;
 
+  /** IMO number where the vessel has one. */
+  imo?: string;
   mmsi?: string;
   flag?: string;
+  callSignNo?: string;
+  officialNo?: string;
   callSign?: string;
   built?: number;
   builder?: string;
@@ -95,6 +104,8 @@ export interface Vessel {
   /** Principal particulars. */
   loaM?: number;
   beamM?: number;
+  /** Moulded depth. */
+  depthM?: number;
   draftM?: number;
   dwt?: number;
   grt?: number;
@@ -102,6 +113,14 @@ export interface Vessel {
   deckAreaM2?: number;
   accommodation?: number;
   dpClass?: string;
+  /** Total persons on board the vessel can accommodate. */
+  totalPob?: number;
+  /** Installed power in brake horsepower, where quoted that way. */
+  bhp?: number;
+  /** Usable clear deck area. */
+  deckSpaceM2?: number;
+  /** Free-text speed note, e.g. "12.5 kn max / 8 kn eco". */
+  speedNote?: string;
   /** Free-form capability tags: "FiFi 1", "Oil Rec", "ROV ready", … */
   features?: string[];
 
@@ -207,7 +226,8 @@ export interface Company {
 
 export interface Contract {
   id: string;
-  vesselImo: string;
+  /** Vessel id, resolved against data/vessels.ts. */
+  vesselId: string;
   vesselName: string;
   vesselType: string;
   charterer: string;
@@ -298,7 +318,7 @@ export interface Alert {
   read?: boolean;
 
   /** Whatever the alert points at. */
-  vesselImo?: string;
+  vesselId?: string;
   companyId?: string;
   contractId?: string;
   projectId?: string;
@@ -308,7 +328,7 @@ export interface Alert {
 /* ---------- Portfolio ---------- */
 
 export interface PortfolioEntry {
-  vesselImo: string;
+  vesselId: string;
   addedAt?: string;
   note?: string;
 }
