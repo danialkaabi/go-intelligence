@@ -217,29 +217,3 @@ up, listed in the app at `/app/settings`:
 
 Next.js 14 (App Router) · React 18 · TypeScript · plain CSS. No runtime
 dependencies beyond React and Next.
-
----
-
-## Moving this into its own repository
-
-This tender is self-contained — it has its own `package.json` and needs
-nothing from the directory above it. To give it a dedicated repository:
-
-1. Create a new **empty** repository on GitHub (no README, no `.gitignore`).
-2. From the repository root:
-
-```bash
-cp -r go-intelligence /tmp/go-intelligence
-cd /tmp/go-intelligence
-git init
-git add -A
-git commit -m "GO Intelligence — platform design"
-git branch -M main
-git remote add origin https://github.com/<you>/<new-repo>.git
-git push -u origin main
-```
-
-3. Import that repository on Vercel.
-
-Alternatively, deploy straight from this repository by setting Vercel's
-**Root Directory** to `go-intelligence` — no file moves required.
