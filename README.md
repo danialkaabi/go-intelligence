@@ -145,6 +145,47 @@ export const VESSELS: Vessel[] = [
 ];
 ```
 
+
+---
+
+## Vessel photographs
+
+Every vessel profile has a drop zone: drag an image onto it, or click to
+choose one, and it uploads. JPEG, PNG or WebP, up to 8MB.
+
+Uploads go to **Vercel Blob**, because Vercel runs on a read-only
+filesystem and a dropped file cannot be written into `public/` on the
+deployed site. Each photo is stored at `vessels/<vessel id>.<ext>` with the
+random suffix disabled, so a vessel's photo is always at the same address
+and no mapping has to be kept anywhere.
+
+### Connecting the store
+
+1. Vercel dashboard → your project → **Storage** → **Create Database** → **Blob**
+2. Connect it to this project. Vercel adds `BLOB_READ_WRITE_TOKEN` itself.
+3. Redeploy.
+
+Until that is done the drop zone still renders and says exactly what to set
+up; nothing else on the platform is affected.
+
+### Precedence
+
+A photo committed to the repo in `data/vessel-details.ts` (`photoUrl`)
+shows until something is uploaded for that vessel; an upload then takes
+precedence, because uploading is the more recent deliberate act. Removing
+the upload falls back to the committed file.
+
+### ⚠ The endpoint is unauthenticated
+
+`/api/vessel-photo` has no auth, because the platform has none. Anyone who
+can reach the site can upload or delete a vessel photograph. The route
+checks that the id names a real vessel, that the file is an image and that
+it is under 8MB, which stops arbitrary writes into the store — but it does
+not stop a stranger who finds the URL.
+
+Before this is public, turn on **Vercel → Settings → Deployment Protection**,
+or put real authentication in front of the app.
+
 ---
 
 ## Design system

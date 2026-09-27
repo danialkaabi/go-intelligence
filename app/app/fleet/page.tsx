@@ -16,6 +16,7 @@ import FleetFilters, { type Facet } from './FleetFilters';
 import { VESSELS } from '@/data/vessels';
 import { companyName } from '@/data/companies';
 import { num, orDash } from '@/lib/format';
+import { uploadedPhotoMap } from '@/lib/vessel-photos';
 import type { Vessel } from '@/data/types';
 
 export const metadata: Metadata = {
@@ -50,7 +51,9 @@ const many = (sp: SP, k: string): string[] => {
   return v === undefined ? [] : Array.isArray(v) ? v : [v];
 };
 
-export default function FleetPage({ searchParams }: { searchParams: SP }) {
+export default async function FleetPage({ searchParams }: { searchParams: SP }) {
+  // One lookup for the whole page, not one per row.
+  const photos = await uploadedPhotoMap();
   const q = (many(searchParams, 'q')[0] ?? '').trim().toLowerCase();
   const selected = Object.fromEntries(
     FACETS.map((f) => [f.key, many(searchParams, f.key)]),
@@ -192,7 +195,7 @@ export default function FleetPage({ searchParams }: { searchParams: SP }) {
                   {shown.map((v) => (
                     <tr key={v.id}>
                       <td style={{ width: 44, paddingRight: 0 }}>
-                        <VesselThumb src={v.photoUrl} name={v.name} />
+                        <VesselThumb src={photos.get(v.id) ?? v.photoUrl} name={v.name} />
                       </td>
                       <td className="td-strong">
                         <Link href={`/app/fleet/${v.id}`} className="link-arrow" style={{ fontSize: 13 }}>

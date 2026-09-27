@@ -4,7 +4,8 @@ import PageHead from '@/components/app/PageHead';
 import Panel from '@/components/ui/Panel';
 import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
-import VesselPhoto from '@/components/ui/VesselPhoto';
+import VesselPhotoDrop from '@/components/ui/VesselPhotoDrop';
+import { blobConfigured, uploadedPhotoUrl } from '@/lib/vessel-photos';
 import { IconArrow, IconFleet, IconMaps } from '@/components/ui/Icons';
 import { getVessel } from '@/data/vessels';
 import { companyName } from '@/data/companies';
@@ -57,7 +58,7 @@ function Spec({
 const m = (n?: number) => (n === undefined ? undefined : `${n} m`);
 const t = (n?: number) => (n === undefined ? undefined : `${n.toLocaleString('en-US')} T`);
 
-export default function VesselProfilePage({ params }: Params) {
+export default async function VesselProfilePage({ params }: Params) {
   const vessel = getVessel(params.id);
 
   if (!vessel) {
@@ -85,6 +86,10 @@ export default function VesselProfilePage({ params }: Params) {
       </>
     );
   }
+
+  // An uploaded photograph sits on top of anything committed by hand:
+  // uploading is the more recent deliberate act.
+  const uploaded = await uploadedPhotoUrl(vessel.id);
 
   const benchmark =
     vessel.region && vessel.sizeClass
@@ -134,7 +139,13 @@ export default function VesselProfilePage({ params }: Params) {
 
       {/* ---------- Photograph ---------- */}
       <div style={{ marginBottom: 16 }}>
-        <VesselPhoto src={vessel.photoUrl} name={vessel.name} ratio="21 / 9" />
+        <VesselPhotoDrop
+          vesselId={vessel.id}
+          name={vessel.name}
+          initialUrl={uploaded ?? vessel.photoUrl}
+          curatedUrl={vessel.photoUrl}
+          configured={blobConfigured()}
+        />
       </div>
 
       <Panel title="Particulars" style={{ marginBottom: 16 }}>

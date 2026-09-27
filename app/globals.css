@@ -1548,3 +1548,72 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   padding: 32px;
   box-shadow: var(--shadow-lg);
 }
+
+
+/* ---------- 22. Vessel photograph drop zone ---------- */
+
+.photo-drop {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  min-height: 200px;
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line-2);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.photo-drop[role='button'] { cursor: pointer; }
+.photo-drop[role='button']:hover { border-color: var(--line-strong); background: var(--surface-3); }
+.photo-drop.is-over {
+  border-color: var(--blue-400);
+  border-style: solid;
+  background: var(--blue-tint-2);
+}
+/* Once a photo is in place the frame stops advertising itself as a target. */
+.photo-drop.has-photo { border-style: solid; border-color: var(--line); background: var(--surface-3); }
+
+.photo-drop-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.photo-drop-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 24px;
+  pointer-events: none;
+}
+.photo-drop-empty .empty-body { max-width: 38ch; }
+
+.photo-drop-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.photo-drop-tools {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+}
+.photo-drop:hover .photo-drop-tools,
+.photo-drop:focus-within .photo-drop-tools { opacity: 1; }
+.photo-drop-tools .btn {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: var(--line-2);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 680px) {
+  /* Touch has no hover, so the controls stay visible. */
+  .photo-drop-tools { opacity: 1; }
+}

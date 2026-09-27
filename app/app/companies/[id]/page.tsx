@@ -16,6 +16,7 @@ import { tierCountsForCompany, vesselsForCompany } from '@/data/vessels';
 import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
 import { REVIEW_FLAG_LABELS, REVIEW_RESOLUTION } from '@/lib/review';
 import { orDash, pct } from '@/lib/format';
+import { uploadedPhotoMap } from '@/lib/vessel-photos';
 
 type Params = { params: { id: string } };
 
@@ -70,7 +71,8 @@ function ToFill({ what, field }: { what: string; field: string }) {
   );
 }
 
-export default function CompanyProfilePage({ params }: Params) {
+export default async function CompanyProfilePage({ params }: Params) {
+  const photos = await uploadedPhotoMap();
   const company = getCompany(params.id);
 
   if (!company) {
@@ -430,7 +432,7 @@ export default function CompanyProfilePage({ params }: Params) {
                   {fleet.map((v) => (
                     <tr key={v.id}>
                       <td style={{ width: 44, paddingRight: 0 }}>
-                        <VesselThumb src={v.photoUrl} name={v.name} />
+                        <VesselThumb src={photos.get(v.id) ?? v.photoUrl} name={v.name} />
                       </td>
                       <td className="td-strong">
                         <Link href={`/app/fleet/${v.id}`}>{v.name}</Link>
