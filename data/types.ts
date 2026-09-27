@@ -202,6 +202,11 @@ export interface Company {
   employees?: number;
   parentCompanyId?: string;
 
+  /** How the website was established, since it was found by search rather
+   *  than supplied. Per-field provenance, because `provenance` describes
+   *  the record as a whole. */
+  websiteSource?: string;
+
   /** One or two sentences — what the company is and does. */
   description?: string;
   /** The longer narrative: history, ownership, market position. */

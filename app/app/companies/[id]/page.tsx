@@ -143,7 +143,12 @@ export default function CompanyProfilePage({ params }: Params) {
           </Badge>
         )}
         {company.duplicateOfId && <Badge tone="red" dot>Suspected duplicate</Badge>}
-        {company.provenance && <Badge tone="green" dot>Profiled</Badge>}
+        {/* Matches the directory's Profiled column, which keys off a
+            written description rather than any provenance at all. */}
+        {company.description && <Badge tone="green" dot>Profiled</Badge>}
+        {!company.description && company.website && (
+          <Badge tone="blue" dot>Website verified</Badge>
+        )}
       </div>
 
       {/* ---------- Suspected duplicate ---------- */}
@@ -451,7 +456,7 @@ export default function CompanyProfilePage({ params }: Params) {
       </div>
 
       {/* ---------- Record notes and source ---------- */}
-      {(company.notes || company.provenance) && (
+      {(company.notes || company.provenance || company.websiteSource) && (
         <Panel title="Record" style={{ marginBottom: 16 }}>
           <div className="panel-body stack g14">
             {company.notes && (
@@ -465,10 +470,27 @@ export default function CompanyProfilePage({ params }: Params) {
               </div>
             )}
 
-            {company.provenance && (
+            {company.websiteSource && (
               <div
                 style={
                   company.notes
+                    ? { borderTop: '1px solid var(--line)', paddingTop: 14 }
+                    : undefined
+                }
+              >
+                <div className="plan-meta-k" style={{ marginBottom: 7 }}>
+                  Website
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.7 }}>
+                  {company.websiteSource}
+                </p>
+              </div>
+            )}
+
+            {company.provenance && (
+              <div
+                style={
+                  company.notes || company.websiteSource
                     ? { borderTop: '1px solid var(--line)', paddingTop: 14 }
                     : undefined
                 }
