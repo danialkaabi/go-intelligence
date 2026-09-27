@@ -41,6 +41,9 @@ export const VESSEL_SUBTYPES: Record<VesselCategory, string[]> = {
     'Cable Lay',
     'Pipe Lay',
     'Survey / ROV Support',
+    'Heavy Lift & Crane',
+    'Liftboat',
+    'Well Stimulation',
   ],
   MODU: ['Jack-up', 'Semi-submersible', 'Drillship', 'Tender Rig'],
   'OFFSHORE PRODUCTION': ['FPSO', 'FSO', 'FLNG', 'Fixed Platform', 'MOPU'],
@@ -56,6 +59,20 @@ export const VESSEL_SUBTYPES: Record<VesselCategory, string[]> = {
 
 /** Size classes, keyed by sub-type. Five bands for AHTS, three for PSV. */
 export const SIZE_CLASSES: Record<string, string[]> = {
+  AHT: [
+    'AHT (Small)',
+    'AHT (Medium)',
+    'AHT (Large)',
+    'AHT (Very Large)',
+    'AHT (Super Large)',
+  ],
+  'Ocean Going Tug': [
+    'Ocean Going Tug (Small)',
+    'Ocean Going Tug (Medium)',
+    'Ocean Going Tug (Large)',
+    'Ocean Going Tug (Extra Large)',
+  ],
+  Liftboat: ['Liftboat (Small)', 'Liftboat (Large)'],
   AHTS: [
     'AHTS (Small)',
     'AHTS (Medium)',

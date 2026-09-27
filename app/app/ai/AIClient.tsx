@@ -4,8 +4,7 @@ import { useState } from 'react';
 import PageHead from '@/components/app/PageHead';
 import Panel from '@/components/ui/Panel';
 import { IconAI, IconArrow } from '@/components/ui/Icons';
-import { VESSELS } from '@/data/vessels';
-import { COMPANIES } from '@/data/companies';
+
 
 /** The sequence GO AI reasons across — strategy book, section 09D. */
 const CYCLE = [
@@ -25,11 +24,10 @@ const SUGGESTIONS = [
   'Who beneficially owns the vessels working the tenders we are bidding on?',
 ];
 
-export default function AIClient() {
+export default function AIClient({ hasRecords }: { hasRecords: boolean }) {
   const [query, setQuery] = useState('');
   const [submitted, setSubmitted] = useState<string | null>(null);
 
-  const hasRecords = VESSELS.length > 0 || COMPANIES.length > 0;
 
   return (
     <>

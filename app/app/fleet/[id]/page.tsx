@@ -6,7 +6,7 @@ import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import VesselPhoto from '@/components/ui/VesselPhoto';
 import { IconArrow, IconFleet, IconMaps } from '@/components/ui/Icons';
-import { VESSELS, getVessel } from '@/data/vessels';
+import { getVessel } from '@/data/vessels';
 import { companyName } from '@/data/companies';
 import { benchmarkFor } from '@/data/market';
 import { orDash, rateBand, usd } from '@/lib/format';
@@ -19,8 +19,11 @@ export function generateMetadata({ params }: Params): Metadata {
   return { title: vessel ? vessel.name : 'Vessel profile' };
 }
 
+/** Vessel pages render on demand rather than being prerendered: eleven
+ *  thousand of them would dominate every build, and most are never opened. */
+export const dynamicParams = true;
 export function generateStaticParams() {
-  return VESSELS.map((v) => ({ id: v.id }));
+  return [];
 }
 
 function Spec({

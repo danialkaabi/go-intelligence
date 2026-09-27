@@ -11,7 +11,7 @@ import {
   IconFleet,
   IconShield,
 } from '@/components/ui/Icons';
-import { COMPANIES, getCompany } from '@/data/companies';
+import { getCompany } from '@/data/companies';
 import { tierCountsForCompany, vesselsForCompany } from '@/data/vessels';
 import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
 import { REVIEW_FLAG_LABELS, REVIEW_RESOLUTION } from '@/lib/review';
@@ -24,8 +24,11 @@ export function generateMetadata({ params }: Params): Metadata {
   return { title: company ? company.name : 'Company profile' };
 }
 
+/** Rendered on demand: seven thousand company pages would dominate the
+ *  build, and most are never opened. */
+export const dynamicParams = true;
 export function generateStaticParams() {
-  return COMPANIES.map((c) => ({ id: c.id }));
+  return [];
 }
 
 function Spec({ k, v, href }: { k: string; v?: string | number | null; href?: string }) {

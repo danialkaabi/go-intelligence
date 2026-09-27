@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import MapsClient from './MapsClient';
+import { VESSELS } from '@/data/vessels';
 
 export const metadata: Metadata = {
   title: 'Maps & Layers',
@@ -7,5 +8,13 @@ export const metadata: Metadata = {
 };
 
 export default function MapsPage() {
-  return <MapsClient />;
+  // Only vessels carrying a position are sent to the browser — the full
+  // database has no business in a map component.
+  const positioned = VESSELS.filter((v) => v.position).map((v) => ({
+    id: v.id,
+    name: v.name,
+    subType: v.subType,
+    status: v.status,
+  }));
+  return <MapsClient positioned={positioned} />;
 }

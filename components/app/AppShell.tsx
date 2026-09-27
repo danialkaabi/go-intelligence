@@ -9,11 +9,14 @@ import { NAV } from './nav';
 import { IconAlerts, IconMenu, IconSearch, IconClose } from '@/components/ui/Icons';
 import { initials } from '@/lib/format';
 import { ACCOUNT } from '@/data/account';
-import { VESSELS } from '@/data/vessels';
-import { COMPANIES } from '@/data/companies';
-import { CONTRACTS } from '@/data/contracts';
-import { TENDERS } from '@/data/tenders';
-import { ALERTS } from '@/data/alerts';
+
+export interface NavCounts {
+  vessels: number;
+  companies: number;
+  contracts: number;
+  tenders: number;
+  alerts: number;
+}
 
 const TIER_LABEL: Record<string, string> = {
   shipowner: 'Shipowner / Operator',
@@ -21,20 +24,18 @@ const TIER_LABEL: Record<string, string> = {
   'noc-epc': 'NOC & EPC Contractor',
 };
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  counts,
+}: {
+  children: React.ReactNode;
+  /** Computed on the server. The datasets run to tens of thousands of
+   *  records and must never reach the browser just to show a badge. */
+  counts: NavCounts;
+}) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { open: paletteOpen, setOpen: setPaletteOpen } = useCommandPalette();
-
-  // Counts come straight off the record arrays, so the sidebar is an
-  // honest reflection of what is actually in the platform.
-  const counts: Record<string, number> = {
-    vessels: VESSELS.length,
-    companies: COMPANIES.length,
-    contracts: CONTRACTS.length,
-    tenders: TENDERS.length,
-    alerts: ALERTS.filter((a) => !a.read).length,
-  };
 
   const isActive = (href: string) =>
     href === '/app' ? pathname === '/app' : pathname.startsWith(href);
@@ -63,7 +64,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     <Icon size={16} />
                     {item.label}
                     {count !== undefined && count > 0 && (
-                      <span className="nav-count">{count}</span>
+                      <span className="nav-count">
+                        {count.toLocaleString('en-US')}
+                      </span>
                     )}
                   </Link>
                 );

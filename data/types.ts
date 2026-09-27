@@ -69,9 +69,12 @@ export interface Vessel {
    *  craft never receive one, so the key cannot depend on it. */
   id: string;
   name: string;
-  category: VesselCategory;
+  /** The owner's own identifier for the vessel, e.g. "GO-002907". */
+  goId?: string;
+  /** Optional: 61 imported rows carry no readable type at all. */
+  category?: VesselCategory;
   /** e.g. "AHTS", "PSV". Must be a sub-type of `category`. */
-  subType: string;
+  subType?: string;
   /** e.g. "AHTS (Large)". */
   sizeClass?: string;
   /** Optional: a builder's spec sheet says nothing about commercial status,
@@ -121,6 +124,10 @@ export interface Vessel {
   deckSpaceM2?: number;
   /** Free-text speed note, e.g. "12.5 kn max / 8 kn eco". */
   speedNote?: string;
+  /** The size figure as the source stated it, e.g. "5,150 BHP", "300 FT".
+   *  Kept verbatim because the unit varies by vessel class and some of it
+   *  (feet) is water depth rather than length. */
+  sizeNote?: string;
   /** Free-form capability tags: "FiFi 1", "Oil Rec", "ROV ready", … */
   features?: string[];
 

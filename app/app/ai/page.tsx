@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import AIClient from './AIClient';
+import { VESSELS } from '@/data/vessels';
+import { COMPANIES } from '@/data/companies';
 
 export const metadata: Metadata = {
   title: 'GO AI',
@@ -7,5 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function AIPage() {
-  return <AIClient />;
+  // Only the answer travels to the browser, not the datasets behind it.
+  return <AIClient hasRecords={VESSELS.length > 0 || COMPANIES.length > 0} />;
 }

@@ -6,7 +6,6 @@ import Panel from '@/components/ui/Panel';
 import EmptyState from '@/components/ui/EmptyState';
 import { IconLayers, IconMaps } from '@/components/ui/Icons';
 import { MAP_LAYERS, REGIONS } from '@/lib/taxonomy';
-import { VESSELS } from '@/data/vessels';
 
 /**
  * The map canvas. A real tile layer needs a provider key, so this renders
@@ -171,14 +170,20 @@ function MapCanvas({ empty }: { empty: boolean }) {
   );
 }
 
-export default function MapsClient() {
+export interface MapVessel {
+  id: string;
+  name: string;
+  subType?: string;
+  status?: string;
+}
+
+export default function MapsClient({ positioned }: { positioned: MapVessel[] }) {
   const [active, setActive] = useState<string[]>(['vessels', 'platforms', 'blocks']);
   const [region, setRegion] = useState<string>(REGIONS[0]);
 
   const toggleLayer = (id: string) =>
     setActive((a) => (a.includes(id) ? a.filter((x) => x !== id) : [...a, id]));
 
-  const positioned = VESSELS.filter((v) => v.position);
 
   return (
     <>
@@ -286,7 +291,7 @@ export default function MapsClient() {
                     <div className="grow">
                       <div className="feed-title">{v.name}</div>
                       <div className="feed-meta">
-                        {v.subType} · {v.status}
+                        {v.subType ?? 'Type not recorded'} · {v.status ?? 'Status not recorded'}
                       </div>
                     </div>
                   </div>

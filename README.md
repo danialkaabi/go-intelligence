@@ -78,15 +78,29 @@ file it lives in, the fields it requires, and what each one feeds.
 
 ### What is already loaded
 
-`data/companies.ts` holds **2,596 companies**, imported from the consolidated
-GO Companies workbook. The source carried company names and — for the 1,485
-still awaiting entity review — a registration country and the reason review
-is outstanding. Nothing else was in the source, so nothing else was written:
-type, headquarters, website, leadership, description, background and fleet
-size are absent rather than guessed, and every profile shows them as "Not
-recorded" until filled in.
+| Records | Count | Source |
+| --- | --- | --- |
+| Vessels | 11,132 | GO Fleet database, first batch |
+| Companies | 7,262 | GO Companies workbook, plus owners found on vessel records |
+| Vessel photographs | 3 | Astro Offshore spec sheets |
+| Profiled companies | 6 | Researched from company websites |
 
-Everything else is still empty.
+Everything else — contracts, tenders, market benchmarks, alerts — is empty.
+
+### How the data is layered
+
+Bulk records live in JSON and are replaced wholesale on re-import. Anything
+researched by hand lives in a TypeScript overlay beside it, keyed by id, and
+wins over the import:
+
+| Bulk (replaced on import) | Overlay (survives import) |
+| --- | --- |
+| `data/vessels.json` | `data/vessel-details.ts` |
+| `data/companies.json` | `data/company-details.ts` |
+
+`data/vessels.ts` and `data/companies.ts` merge the two and export the result.
+So re-importing a newer fleet sheet cannot flatten a spec sheet you typed in
+by hand, or a company you profiled from its website.
 
 All records live in `/data` as typed arrays:
 
