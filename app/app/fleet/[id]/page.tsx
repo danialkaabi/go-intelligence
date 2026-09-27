@@ -5,7 +5,7 @@ import Panel from '@/components/ui/Panel';
 import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import VesselPhotoDrop from '@/components/ui/VesselPhotoDrop';
-import { blobConfigured, uploadedPhotoUrl } from '@/lib/vessel-photos';
+import { uploadedPhotoUrl } from '@/lib/vessel-photos';
 import { IconArrow, IconFleet, IconMaps } from '@/components/ui/Icons';
 import { getVessel } from '@/data/vessels';
 import { companyName } from '@/data/companies';
@@ -144,7 +144,6 @@ export default async function VesselProfilePage({ params }: Params) {
           name={vessel.name}
           initialUrl={uploaded ?? vessel.photoUrl}
           curatedUrl={vessel.photoUrl}
-          configured={blobConfigured()}
         />
       </div>
 

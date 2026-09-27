@@ -21,7 +21,6 @@ export default function VesselPhotoDrop({
   name,
   initialUrl,
   curatedUrl,
-  configured,
 }: {
   vesselId: string;
   name: string;
@@ -29,8 +28,6 @@ export default function VesselPhotoDrop({
   initialUrl?: string;
   /** A photo committed to the repo, which an upload would sit on top of. */
   curatedUrl?: string;
-  /** Whether a Blob store is connected. */
-  configured: boolean;
 }) {
   const [url, setUrl] = useState<string | undefined>(initialUrl);
   const [state, setState] = useState<State>({ kind: 'idle' });
@@ -39,14 +36,11 @@ export default function VesselPhotoDrop({
 
   const upload = useCallback(
     async (file: File) => {
-      if (!configured) {
-        setState({
-          kind: 'error',
-          message:
-            'No Blob store is connected yet. In Vercel: Storage → Create Database → Blob, connect it to this project, then redeploy.',
-        });
-        return;
-      }
+      // Deliberately no client-side "is it configured?" check. Next caches
+      // this page's render, so a value passed in from the server goes stale
+      // the moment a Blob store is connected — the page would keep refusing
+      // uploads until its cache happened to be purged. The route evaluates
+      // the token fresh on every request, so let it answer.
       const preview = URL.createObjectURL(file);
       setState({ kind: 'uploading', preview });
       try {
@@ -65,7 +59,7 @@ export default function VesselPhotoDrop({
         URL.revokeObjectURL(preview);
       }
     },
-    [configured, vesselId],
+    [vesselId],
   );
 
   const remove = useCallback(async () => {

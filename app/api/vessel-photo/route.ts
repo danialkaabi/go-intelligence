@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { del, list, put } from '@vercel/blob';
 import { getVessel } from '@/data/vessels';
@@ -27,6 +28,35 @@ export const runtime = 'nodejs';
 
 function configured() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+/**
+ * Status check. Answers, at request time rather than render time, whether a
+ * Blob store is actually reachable — so "it still says not connected" can be
+ * settled with a fact instead of another redeploy. Reveals nothing but a
+ * boolean and a count.
+ */
+export async function GET() {
+  if (!configured()) {
+    return NextResponse.json({
+      configured: false,
+      reason:
+        'BLOB_READ_WRITE_TOKEN is not set on this deployment. Connect a Blob store in Vercel → Storage, then redeploy so the variable is attached.',
+    });
+  }
+  try {
+    const { blobs } = await list({ prefix: 'vessels/', limit: 1000 });
+    return NextResponse.json({ configured: true, photosStored: blobs.length });
+  } catch (e) {
+    return NextResponse.json(
+      {
+        configured: true,
+        reachable: false,
+        reason: e instanceof Error ? e.message : 'The Blob store could not be reached.',
+      },
+      { status: 502 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -88,7 +118,18 @@ export async function POST(request: Request) {
     contentType: file.type,
   });
 
+  // Vessel and company pages are rendered on demand and then cached, so
+  // without this the new photo would vanish again on the next reload.
+  purge();
+
   return NextResponse.json({ url: blob.url });
+}
+
+/** Drop the cached renders that display vessel photographs. */
+function purge() {
+  revalidatePath('/app/fleet/[id]', 'page');
+  revalidatePath('/app/fleet', 'page');
+  revalidatePath('/app/companies/[id]', 'page');
 }
 
 export async function DELETE(request: Request) {
@@ -101,5 +142,6 @@ export async function DELETE(request: Request) {
   }
   const existing = await list({ prefix: `vessels/${id}.`, limit: 10 });
   await Promise.all(existing.blobs.map((b) => del(b.url)));
+  purge();
   return NextResponse.json({ ok: true });
 }

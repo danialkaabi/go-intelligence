@@ -168,6 +168,16 @@ and no mapping has to be kept anywhere.
 Until that is done the drop zone still renders and says exactly what to set
 up; nothing else on the platform is affected.
 
+To check whether the token actually reached a deployment, open
+`/api/vessel-photo` in a browser. It answers at request time:
+
+```json
+{ "configured": true, "photosStored": 3 }
+```
+
+A `configured: false` there means the variable is genuinely missing from
+that deployment — not that a page is stale.
+
 ### Precedence
 
 A photo committed to the repo in `data/vessel-details.ts` (`photoUrl`)
