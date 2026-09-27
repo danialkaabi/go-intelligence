@@ -12,6 +12,107 @@ import type { Company } from './types';
  * the URL) and add an entry below.
  */
 export const COMPANY_DETAILS: Record<string, Partial<Company>> = {
+  "petrobras": {
+    country: "Brazil",
+    notes: "Country corrected from Norway to Brazil. Brazilian state-controlled oil company, headquartered in Rio de Janeiro.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against petrobras.com.br / Wikipedia",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "bourbon": {
+    country: "France",
+    notes: "Country corrected from Malaysia to France. Offshore marine services group based in Marseille.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against Wikipedia (Bourbon group)",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "penguin-international": {
+    country: "Singapore",
+    notes: "Country corrected from Indonesia to Singapore. Singapore-listed shipbuilder and operator; SGX-listed, yards in Singapore and Batam.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against penguin.com.sg / SGX",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "halul-offshore": {
+    country: "Qatar",
+    notes: "Country corrected from Nigeria to Qatar. Halul Offshore Services Co W.L.L., Doha \u2014 formed in 2000 by Qatar Navigation and Qatar Shipping.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against milahaoffshore.com / Dun & Bradstreet",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "solstad-maritime": {
+    country: "Norway",
+    notes: "Country corrected from Indonesia to Norway. Norwegian offshore vessel owner, headquartered in Skudeneshavn.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against Wikipedia (Solstad Offshore) / MarketScreener",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "sbm-offshore": {
+    country: "Netherlands",
+    notes: "Country corrected from United Kingdom to Netherlands. SBM Offshore N.V., registered in the Netherlands (no. 62829327), head office Amsterdam, Euronext Amsterdam listed.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against sbmoffshore.com",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "northern-offshore-services": {
+    country: "Sweden",
+    notes: "Country corrected from United Kingdom to Sweden. Head office on Dons\u00f6, Gothenburg; branch offices in Denmark, the US and the UK.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against n-o-s.eu",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "promar-shipping": {
+    country: "Switzerland",
+    notes: "Country corrected from Hong Kong to Switzerland. Promar Shipping Services S.A., headquartered in Geneva since 2002.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against UN Global Compact / MagicPort",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "gac-marine": {
+    country: "United Arab Emirates",
+    notes: "Country corrected from United Kingdom to United Arab Emirates. GAC Group is headquartered in Dubai; GAC Marine registered at Dubai International Financial Centre.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against gac.com",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+  "aesen": {
+    country: "Singapore",
+    notes: "Country corrected from United Kingdom to Singapore. Singapore-based crewboat and offshore support operator, formerly Miclyn Express Offshore.",
+    review: undefined,
+    provenance: {
+      source: "Country verified against Riviera Maritime / Splash247 / MagicPort",
+      retrievedAt: "2026-09-27",
+      confidence: "high",
+    },
+  },
+
   "adnoc-logistics-and-service": {
     duplicateOfId: "adnoc-logistics-and-services",
     notes: "Almost certainly the same company as ADNOC Logistics and Services, imported twice with a singular/plural spelling difference. Kept rather than merged — deciding which record survives is yours.",
