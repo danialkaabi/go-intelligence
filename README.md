@@ -80,8 +80,8 @@ file it lives in, the fields it requires, and what each one feeds.
 
 | Records | Count | Source |
 | --- | --- | --- |
-| Vessels | 11,132 | GO Fleet database, first batch |
-| Companies | 7,262 | GO Companies workbook, plus owners found on vessel records |
+| Vessels | 13,639 | GO Fleet database, first and second batches |
+| Companies | 8,144 | GO Companies workbook, plus owners found on vessel records |
 | Vessel photographs | 3 | Astro Offshore spec sheets |
 | Profiled companies | 6 | Researched from company websites |
 
