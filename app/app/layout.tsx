@@ -2,6 +2,7 @@ import AppShell from '@/components/app/AppShell';
 import { VESSELS } from '@/data/vessels';
 import { COMPANIES } from '@/data/companies';
 import { CONTRACTS } from '@/data/contracts';
+import { FIXTURES } from '@/data/charters';
 import { TENDERS } from '@/data/tenders';
 import { ALERTS } from '@/data/alerts';
 
@@ -11,7 +12,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   const counts = {
     vessels: VESSELS.length,
     companies: COMPANIES.length,
-    contracts: CONTRACTS.length,
+    contracts: FIXTURES.length + CONTRACTS.length,
     tenders: TENDERS.length,
     alerts: ALERTS.filter((a) => !a.read).length,
   };

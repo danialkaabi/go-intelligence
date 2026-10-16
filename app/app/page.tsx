@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/Icons';
 import { VESSELS } from '@/data/vessels';
 import { CONTRACTS } from '@/data/contracts';
+import { FIXTURES, runningFixtures } from '@/data/charters';
 import { TENDERS } from '@/data/tenders';
 import { ALERTS } from '@/data/alerts';
 import { UTILISATION, RATE_BENCHMARKS } from '@/data/market';
@@ -25,11 +26,18 @@ import { pct, rateBand, timeAgo } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
+/** How many charters are running is a fact about today, so the dashboard is
+ *  not frozen into the build. */
+export const revalidate = 3600;
+
 export default function DashboardPage() {
   const activeVessels = VESSELS.filter((v) => v.status === 'On Hire').length;
-  const openContracts = CONTRACTS.filter((c) => c.status !== 'Completed').length;
+  // The charter book is the fixture data; fixtures entered by hand count too.
+  const running =
+    runningFixtures(FIXTURES).length +
+    CONTRACTS.filter((c) => c.status !== 'Completed').length;
   const unread = ALERTS.filter((a) => !a.read);
-  const isEmpty = VESSELS.length === 0 && CONTRACTS.length === 0 && TENDERS.length === 0;
+  const isEmpty = VESSELS.length === 0 && FIXTURES.length === 0 && TENDERS.length === 0;
 
   return (
     <>
@@ -100,15 +108,17 @@ export default function DashboardPage() {
           }
         />
         <StatTile
-          label="Open contracts"
-          value={CONTRACTS.length === 0 ? '—' : openContracts}
-          empty={CONTRACTS.length === 0}
+          label="Charters running"
+          value={running === 0 ? '—' : running.toLocaleString('en-US')}
+          empty={running === 0}
           accent="gold"
           foot={
-            CONTRACTS.length === 0 ? (
+            FIXTURES.length === 0 ? (
               <span className="muted">No fixtures recorded</span>
             ) : (
-              <span className="muted">in the charter book</span>
+              <span className="muted">
+                of {FIXTURES.length.toLocaleString('en-US')} in the charter book
+              </span>
             )
           }
         />

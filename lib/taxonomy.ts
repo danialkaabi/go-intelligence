@@ -147,6 +147,37 @@ export const CHARTER_TYPES = [
 ] as const;
 export type CharterType = (typeof CHARTER_TYPES)[number];
 
+/* ---------- Fixtures ---------- */
+
+/** The vocabulary the charter book itself uses, which is wider than
+ *  CHARTER_TYPES: a fixture record distinguishes a term fixture from an
+ *  extension of one, and that is a commercial fact rather than a charter
+ *  form. Left exactly as the charter data records it. */
+export const FIXTURE_TYPES = [
+  'Term',
+  'Spot',
+  'Extension',
+  'TC',
+  'BBC',
+  'BBCB',
+  'BBHP',
+] as const;
+export type FixtureType = (typeof FIXTURE_TYPES)[number];
+
+/** Written out where the abbreviation has one settled meaning, and left as
+ *  the abbreviation where expanding it would mean guessing. */
+export const FIXTURE_TYPE_LABELS: Partial<Record<FixtureType, string>> = {
+  Term: 'Term charter',
+  Extension: 'Extension of the previous fixture',
+  TC: 'Time charter',
+  BBC: 'Bareboat charter',
+  BBHP: 'Bareboat hire-purchase',
+};
+
+/** What a rate is per. */
+export const RATE_UNITS = ['pd', 'pa', 'lumpsum'] as const;
+export type RateUnit = (typeof RATE_UNITS)[number];
+
 /* ---------- Tenders ---------- */
 
 export const TENDER_PHASES = [

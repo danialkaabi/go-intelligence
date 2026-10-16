@@ -8,6 +8,7 @@ import { IconAdmin, IconArrow, IconShield } from '@/components/ui/Icons';
 import { VESSELS } from '@/data/vessels';
 import { COMPANIES } from '@/data/companies';
 import { CONTRACTS } from '@/data/contracts';
+import { FIXTURES } from '@/data/charters';
 import { TENDERS } from '@/data/tenders';
 import { RATE_BENCHMARKS, UTILISATION } from '@/data/market';
 import { ALERTS } from '@/data/alerts';
@@ -39,12 +40,21 @@ const SOURCES = [
     href: '/app/companies',
   },
   {
+    name: 'Charter book',
+    file: 'data/charters.json',
+    export: 'FIXTURES',
+    count: FIXTURES.length,
+    required: ['id', 'vesselName', 'startDate', 'contractType', 'charterer'],
+    feeds: 'Vessel charter history, company charter history, the live charter book',
+    href: '/app/contracts',
+  },
+  {
     name: 'Contracts',
     file: 'data/contracts.ts',
     export: 'CONTRACTS',
     count: CONTRACTS.length,
     required: ['id', 'vesselId', 'vesselName', 'charterer', 'charterType', 'status'],
-    feeds: 'The charter book, expiry countdowns, renewal exposure',
+    feeds: 'Fixtures entered by hand, alongside the imported charter book',
     href: '/app/contracts',
   },
   {

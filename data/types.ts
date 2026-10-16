@@ -17,7 +17,9 @@ import type {
   CompanyType,
   ConfidenceLevel,
   ContractStatus,
+  FixtureType,
   ManagementTier,
+  RateUnit,
   TenderPhase,
   Region,
   VesselCategory,
@@ -263,6 +265,79 @@ export interface Contract {
   optionPeriods?: string;
   notes?: string;
   provenance?: Provenance;
+}
+
+/* ---------- Fixture ---------- */
+
+/** A field the charter data carries that its own sources did not: the data
+ *  preparer worked it out and marked it. Carried through so the platform can
+ *  show a derived value as derived rather than as fact. */
+export type FixtureDerivedField = 'startDate' | 'charterer' | 'owner';
+
+/**
+ * One row of the charter book — a single fixture, as recorded.
+ *
+ * Separate from CharterRecord, which is the shape for entering a fixture by
+ * hand. A fixture out of the charter data carries its own currency and rate
+ * basis (most of these rates are not in dollars, and relabelling them as
+ * though they were would be a lie), the period exactly as it was written,
+ * and the preparer's marks on anything derived or doubtful.
+ */
+export interface Fixture {
+  id: string;
+
+  /** Vessel id, where the fixture resolved to a vessel in the fleet. Absent
+   *  where the vessel is not in the fleet database — the fixture is still
+   *  recorded, because dropping it would lose charter history. */
+  vesselId?: string;
+  /** The vessel as the charter data names it. All there is to show when the
+   *  vessel is not in the fleet. */
+  vesselName: string;
+  imo?: string;
+  /** Type and size as the charter data holds them, which can read
+   *  differently from the fleet record for the same vessel. */
+  vesselType?: string;
+  size?: string;
+
+  /** ISO date the fixture began. */
+  startDate?: string;
+  /** As written: "14 days", "1 yr 6 mths". */
+  period?: string;
+  periodDays?: number;
+  /** startDate plus periodDays — approximate by construction, and never a
+   *  substitute for the contract. */
+  endDate?: string;
+
+  contractType?: FixtureType;
+  rate?: number;
+  /** ISO 4217, e.g. "USD", "NOK", "GBP". */
+  currency?: string;
+  rateUnit?: RateUnit;
+
+  charterer?: string;
+  /** Beneficial owner at the time of the fixture, as the charter data holds
+   *  it. Vessels change hands, so this is not always today's owner. */
+  ownerName?: string;
+  ownerId?: string;
+
+  /** The preparer's note where the row wants an eye on it. */
+  reviewNote?: string;
+  derived?: FixtureDerivedField[];
+}
+
+/** One charterer's dealings with a company's fleet, counted from the
+ *  fixtures rather than maintained by hand. */
+export interface CompanyCharterSummary {
+  charterer?: string;
+  fixtures: number;
+  /** Distinct vessels, so the summary can link straight to them. */
+  vessels: Array<{ id?: string; name: string }>;
+  /** ISO dates: earliest start and latest end seen. */
+  firstStart?: string;
+  lastEnd?: string;
+  contractTypes: FixtureType[];
+  /** Fixtures running today. */
+  running: number;
 }
 
 /* ---------- Tender ---------- */

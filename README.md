@@ -82,10 +82,11 @@ file it lives in, the fields it requires, and what each one feeds.
 | --- | --- | --- |
 | Vessels | 13,639 | GO Fleet database, first and second batches |
 | Companies | 8,144 | GO Companies workbook, plus owners found on vessel records |
+| Fixtures | 9,279 | GO charter data, 2005–2029, 2,593 vessels |
 | Vessel photographs | 3 | Astro Offshore spec sheets |
 | Profiled companies | 6 | Researched from company websites |
 
-Everything else — contracts, tenders, market benchmarks, alerts — is empty.
+Everything else — tenders, market benchmarks, alerts — is empty.
 
 ### How the data is layered
 
@@ -97,10 +98,31 @@ wins over the import:
 | --- | --- |
 | `data/vessels.json` | `data/vessel-details.ts` |
 | `data/companies.json` | `data/company-details.ts` |
+| `data/charters.json` | a vessel's `charterHistory`, a company's `charterHistory` |
 
 `data/vessels.ts` and `data/companies.ts` merge the two and export the result.
 So re-importing a newer fleet sheet cannot flatten a spec sheet you typed in
 by hand, or a company you profiled from its website.
+
+### How charter history reaches a page
+
+Nothing on a vessel points at its fixtures, and nothing on a company points
+at its charter history. Both joins are made at read time:
+
+- a fixture finds its vessel by **IMO** — exact, and no IMO in the charter
+  data hits two vessels — falling back to an exact vessel name where that
+  name belongs to one vessel only;
+- a company's charter history is every fixture of every vessel that names it
+  at any of the six ownership and management tiers.
+
+So adding a vessel, or correcting who owns it, repopulates both pages with
+no join to maintain. A fixture whose vessel is not in the fleet is kept and
+listed on the Contracts screen rather than dropped, so the gap is visible.
+
+Values the charter data's own sources did not carry — a start date worked
+out from the vessel's age, a charterer matched from a fleet status report,
+an owner taken from the same vessel's other rows — are marked with a dagger
+wherever they appear, and never shown as recorded fact.
 
 All records live in `/data` as typed arrays:
 
@@ -108,6 +130,7 @@ All records live in `/data` as typed arrays:
 | -------------------- | --------------------------------- |
 | `data/vessels.ts`    | `VESSELS`                         |
 | `data/companies.ts`  | `COMPANIES`                       |
+| `data/charters.ts`   | `FIXTURES`                        |
 | `data/contracts.ts`  | `CONTRACTS`                       |
 | `data/tenders.ts`   | `TENDERS`                        |
 | `data/market.ts`     | `RATE_BENCHMARKS`, `UTILISATION`  |

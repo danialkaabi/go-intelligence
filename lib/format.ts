@@ -19,6 +19,61 @@ export function usdCompact(n?: number | null): string {
   return usd(n);
 }
 
+/** A symbol where the currency has a familiar one, the code otherwise. */
+const CURRENCY_SYMBOL: Record<string, string> = {
+  USD: '$',
+  GBP: '£',
+  EUR: '€',
+  JPY: '¥',
+};
+
+/**
+ * A rate in the currency it was actually fixed in: "$18,500/day",
+ * "NOK 185,000/day", "£1,200,000 lumpsum".
+ *
+ * Most rates in the charter book are not in dollars, so none of them is
+ * relabelled as though it were. A rate recorded without a currency — the
+ * source had the number and no unit — shows as a bare figure, and the
+ * fixture's own note says why.
+ */
+export function money(
+  amount?: number | null,
+  currency?: string,
+  unit?: 'pd' | 'pa' | 'lumpsum',
+): string {
+  if (amount === undefined || amount === null || Number.isNaN(amount)) {
+    return EMPTY;
+  }
+  const n = Math.round(amount).toLocaleString('en-US');
+  const symbol = currency ? CURRENCY_SYMBOL[currency] : undefined;
+  const head = symbol ? `${symbol}${n}` : currency ? `${currency} ${n}` : n;
+  const tail =
+    unit === 'pd'
+      ? '/day'
+      : unit === 'pa'
+        ? '/year'
+        : unit === 'lumpsum'
+          ? ' lumpsum'
+          : '';
+  return head + tail;
+}
+
+/** Just the year of an ISO date, for spans: "2016". */
+export function year(iso?: string): string {
+  return iso ? iso.slice(0, 4) : EMPTY;
+}
+
+/** The span a set of dates covers: "2016 – 2021", or "2023 – present" where
+ *  the end date has not been reached yet. */
+export function yearSpan(from?: string, to?: string): string {
+  if (!from && !to) return EMPTY;
+  const a = year(from);
+  const b = to && to > new Date().toISOString().slice(0, 10) ? 'present' : year(to);
+  if (!from) return b;
+  if (!to || a === b) return a;
+  return `${a} – ${b}`;
+}
+
 /** Rate band: "$16,000 – $24,000/day" */
 export function rateBand(low?: number, high?: number): string {
   if (low === undefined || high === undefined) return EMPTY;

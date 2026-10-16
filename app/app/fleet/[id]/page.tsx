@@ -5,13 +5,15 @@ import Panel from '@/components/ui/Panel';
 import Badge, { statusTone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import VesselPhotoDrop from '@/components/ui/VesselPhotoDrop';
+import FixtureTable from '@/components/app/FixtureTable';
 import { uploadedPhotoUrl } from '@/lib/vessel-photos';
 import { IconArrow, IconFleet, IconMaps } from '@/components/ui/Icons';
 import { getVessel } from '@/data/vessels';
 import { companyName } from '@/data/companies';
+import { fixturesForVessel, runningFixtures } from '@/data/charters';
 import { benchmarkFor } from '@/data/market';
-import { orDash, rateBand, usd } from '@/lib/format';
-import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
+import { date, money, orDash, rateBand, usd, yearSpan } from '@/lib/format';
+import { FIXTURE_TYPE_LABELS } from '@/lib/taxonomy';
 
 type Params = { params: { id: string } };
 
@@ -23,6 +25,10 @@ export function generateMetadata({ params }: Params): Metadata {
 /** Vessel pages render on demand rather than being prerendered: eleven
  *  thousand of them would dominate every build, and most are never opened. */
 export const dynamicParams = true;
+
+/** Whether a fixture is running is a fact about today, so a rendered page
+ *  is not kept for longer than an hour. */
+export const revalidate = 3600;
 export function generateStaticParams() {
   return [];
 }
@@ -90,6 +96,27 @@ export default async function VesselProfilePage({ params }: Params) {
   // An uploaded photograph sits on top of anything committed by hand:
   // uploading is the more recent deliberate act.
   const uploaded = await uploadedPhotoUrl(vessel.id);
+
+  // Fixtures find the vessel by themselves, through the IMO the charter data
+  // carries — nothing on the vessel record points at its charter history.
+  const fixtures = fixturesForVessel(vessel.id);
+  const running = runningFixtures(fixtures);
+  const charterers = new Set(
+    fixtures.map((f) => f.charterer).filter(Boolean) as string[],
+  );
+  const span = {
+    from: fixtures.reduce<string | undefined>(
+      (min, f) => (f.startDate && (!min || f.startDate < min) ? f.startDate : min),
+      undefined,
+    ),
+    to: fixtures.reduce<string | undefined>(
+      (max, f) => {
+        const end = f.endDate ?? f.startDate;
+        return end && (!max || end > max) ? end : max;
+      },
+      undefined,
+    ),
+  };
 
   const benchmark =
     vessel.region && vessel.sizeClass
@@ -311,16 +338,88 @@ export default async function VesselProfilePage({ params }: Params) {
         </Panel>
       )}
 
-      <Panel title="Charter history">
-        {!vessel.charterHistory || vessel.charterHistory.length === 0 ? (
+      {/* ---------- Charter history ---------- */}
+      <Panel
+        title={
+          fixtures.length > 0
+            ? `Charter history · ${fixtures.length} fixture${fixtures.length === 1 ? '' : 's'}`
+            : 'Charter history'
+        }
+        action={
+          fixtures.length > 0 ? (
+            <span className="mono" style={{ fontSize: 11, color: 'var(--text-5)' }}>
+              {yearSpan(span.from, span.to)}
+            </span>
+          ) : undefined
+        }
+        style={{ marginBottom: 16 }}
+      >
+        {fixtures.length === 0 ? (
           <EmptyState
             icon={<IconArrow size={22} />}
             title="No charter history recorded"
-            body="Who fixed this vessel, at what rate, for how long and against which field — the commercial record most platforms do not hold."
-            file="data/vessels.ts"
-            fields={['date', 'charterType', 'ratePerDay', 'charterer', 'fieldContractedTo']}
+            body="The charter book holds ten years of fixtures, matched to vessels by IMO number. None of them is this vessel — either it has not been fixed in that window, or its IMO is not on any of those rows."
+            file="data/charters.json"
+            fields={[
+              'startDate',
+              'period',
+              'contractType',
+              'rate',
+              'currency',
+              'charterer',
+            ]}
           />
         ) : (
+          <>
+            <div className="panel-body" style={{ borderBottom: '1px solid var(--line)' }}>
+              {running.length > 0 ? (
+                <div className="stack g8">
+                  {running.map((f) => (
+                    <div key={f.id} className="between wrapflex">
+                      <span style={{ fontSize: 13.5, color: 'var(--text-2)' }}>
+                        <Badge tone="green" dot>
+                          Running now
+                        </Badge>{' '}
+                        {f.contractType
+                          ? (FIXTURE_TYPE_LABELS[f.contractType] ?? f.contractType)
+                          : 'Fixture'}
+                        {f.charterer ? ` to ${f.charterer}` : ' — charterer not disclosed'}
+                        {f.endDate ? ` through ${date(f.endDate)}` : ''}
+                      </span>
+                      {f.rate !== undefined && (
+                        <span className="num" style={{ fontSize: 15 }}>
+                          {money(f.rate, f.currency, f.rateUnit)}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  <p className="muted" style={{ fontSize: 12 }}>
+                    Taken from the fixture&rsquo;s stated period, not from a contract on
+                    file — confirm before relying on it.
+                  </p>
+                </div>
+              ) : (
+                <div className="row g16 wrapflex">
+                  <span style={{ fontSize: 13, color: 'var(--text-3)' }}>
+                    No fixture running today on this record.
+                  </span>
+                  <span className="muted" style={{ fontSize: 12.5 }}>
+                    {charterers.size > 0
+                      ? `${charterers.size} charterer${charterers.size === 1 ? '' : 's'} named across its history`
+                      : 'No charterer named on any of its fixtures'}
+                  </span>
+                </div>
+              )}
+            </div>
+            <FixtureTable fixtures={fixtures} showOwner />
+          </>
+        )}
+      </Panel>
+
+      {/* Fixtures entered by hand live on the vessel record, where they
+          survive a re-import of the charter book. */}
+      {vessel.charterHistory && vessel.charterHistory.length > 0 && (
+        <Panel title="Charter history · recorded by hand">
           <div className="table-scroll">
             <table className="table">
               <thead>
@@ -345,8 +444,8 @@ export default async function VesselProfilePage({ params }: Params) {
               </tbody>
             </table>
           </div>
-        )}
-      </Panel>
+        </Panel>
+      )}
     </>
   );
 }

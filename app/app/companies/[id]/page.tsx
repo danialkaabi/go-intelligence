@@ -11,14 +11,23 @@ import {
   IconFleet,
   IconShield,
 } from '@/components/ui/Icons';
+import FixtureTable from '@/components/app/FixtureTable';
 import { getCompany } from '@/data/companies';
 import { tierCountsForCompany, vesselsForCompany } from '@/data/vessels';
+import {
+  charterSummaryForCompany,
+  fixturesForCompanyFleet,
+} from '@/data/charters';
 import { MANAGEMENT_TIERS } from '@/lib/taxonomy';
 import { REVIEW_FLAG_LABELS, REVIEW_RESOLUTION } from '@/lib/review';
-import { orDash, pct } from '@/lib/format';
+import { orDash, pct, yearSpan } from '@/lib/format';
 import { uploadedPhotoMap } from '@/lib/vessel-photos';
 
 type Params = { params: { id: string } };
+
+/** A large owner has hundreds of fixtures; the profile shows the most recent
+ *  and sends you to the vessel for the rest. */
+const FIXTURE_ROWS = 60;
 
 export function generateMetadata({ params }: Params): Metadata {
   const company = getCompany(params.id);
@@ -28,6 +37,10 @@ export function generateMetadata({ params }: Params): Metadata {
 /** Rendered on demand: seven thousand company pages would dominate the
  *  build, and most are never opened. */
 export const dynamicParams = true;
+
+/** Whether a fixture is running is a fact about today, so a rendered page
+ *  is not kept for longer than an hour. */
+export const revalidate = 3600;
 export function generateStaticParams() {
   return [];
 }
@@ -108,6 +121,13 @@ export default async function CompanyProfilePage({ params }: Params) {
   // Counts come from the vessel records themselves; a hand-entered
   // tierCounts still wins, for companies whose fleet is not all loaded.
   const derivedTiers = tierCountsForCompany(company.id);
+
+  // Fixtures arrive through the fleet: every vessel this company owns or
+  // manages brings its charter history with it, so the profile fills in as
+  // vessels and fixtures are added, with no join kept by hand.
+  const fixtures = fixturesForCompanyFleet(company.id);
+  const charterSummary = charterSummaryForCompany(company.id);
+  const runningTotal = charterSummary.reduce((n, c) => n + c.running, 0);
 
   const duplicateOf = company.duplicateOfId
     ? getCompany(company.duplicateOfId)
@@ -541,17 +561,133 @@ export default async function CompanyProfilePage({ params }: Params) {
         </Panel>
       )}
 
-      {/* ---------- Charter history ---------- */}
-      <Panel title="Charter history · company level">
-        {!company.charterHistory || company.charterHistory.length === 0 ? (
+      {/* ---------- Charter history, counted from the fleet's fixtures ---------- */}
+      <Panel
+        title={
+          charterSummary.length > 0
+            ? `Charter history · ${charterSummary.length} charterer${charterSummary.length === 1 ? '' : 's'} of this fleet`
+            : 'Charter history · company level'
+        }
+        action={
+          runningTotal > 0 ? (
+            <Badge tone="green" dot>
+              {runningTotal} running now
+            </Badge>
+          ) : undefined
+        }
+        style={{ marginBottom: 16 }}
+      >
+        {charterSummary.length === 0 ? (
           <EmptyState
             icon={<IconContracts size={22} />}
             title="No charter history recorded"
-            body="Every GO Companies profile carries this section: which charterers this company has worked with, how many vessels, over what period, and the nature of the agreement."
-            file="data/companies.ts"
-            fields={['charterer', 'vessels', 'period', 'natureOfAgreement']}
+            body={
+              fleet.length === 0
+                ? 'Charter history reaches a company through the vessels it owns. No vessel in the database names this company, so no fixture does either.'
+                : 'The charter book holds ten years of fixtures, matched to vessels by IMO. None of them belongs to a vessel on this fleet list.'
+            }
+            file="data/charters.json"
+            fields={['charterer', 'vessels', 'period', 'contractType', 'rate']}
           />
         ) : (
+          <div className="table-scroll">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Charterer</th>
+                  <th className="th-num">Fixtures</th>
+                  <th>Vessels</th>
+                  <th>Period</th>
+                  <th>Nature of agreement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {charterSummary.map((h) => (
+                  <tr key={h.charterer ?? 'undisclosed'}>
+                    <td className="td-strong">
+                      {h.charterer ?? (
+                        <span className="muted">Not disclosed</span>
+                      )}
+                    </td>
+                    <td className="td-num">{h.fixtures}</td>
+                    <td>
+                      <span style={{ fontSize: 12.5 }}>
+                        {h.vessels.length}
+                        {' · '}
+                        {h.vessels.slice(0, 3).map((v, i) => (
+                          <span key={v.id ?? v.name}>
+                            {i > 0 && ', '}
+                            {v.id ? (
+                              <Link href={`/app/fleet/${v.id}`}>{v.name}</Link>
+                            ) : (
+                              v.name
+                            )}
+                          </span>
+                        ))}
+                        {h.vessels.length > 3 && ` +${h.vessels.length - 3}`}
+                      </span>
+                    </td>
+                    <td className="mono" style={{ fontSize: 12 }}>
+                      {yearSpan(h.firstStart, h.lastEnd)}
+                    </td>
+                    <td>
+                      {h.contractTypes.length > 0 ? (
+                        <span className="row g8 wrapflex">
+                          {h.contractTypes.map((t) => (
+                            <Badge key={t} tone="blue">
+                              {t}
+                            </Badge>
+                          ))}
+                          {h.running > 0 && (
+                            <Badge tone="green" dot>
+                              {h.running} running
+                            </Badge>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="muted">Not recorded</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
+
+      {/* ---------- The fixtures behind that summary ---------- */}
+      {fixtures.length > 0 && (
+        <Panel
+          title={`Fixtures · vessels owned${
+            fixtures.length > FIXTURE_ROWS ? ` · latest ${FIXTURE_ROWS} of ${fixtures.length}` : ''
+          }`}
+          action={
+            <span className="mono" style={{ fontSize: 11, color: 'var(--text-5)' }}>
+              Newest first
+            </span>
+          }
+          style={{ marginBottom: company.charterHistory?.length ? 16 : undefined }}
+        >
+          <FixtureTable fixtures={fixtures.slice(0, FIXTURE_ROWS)} showVessel />
+          {fixtures.length > FIXTURE_ROWS && (
+            <div
+              className="panel-body"
+              style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}
+            >
+              <p style={{ fontSize: 12, color: 'var(--text-4)' }}>
+                {fixtures.length - FIXTURE_ROWS} earlier fixture
+                {fixtures.length - FIXTURE_ROWS === 1 ? '' : 's'} are not shown here.
+                Each vessel&rsquo;s own profile carries its full history.
+              </p>
+            </div>
+          )}
+        </Panel>
+      )}
+
+      {/* Charter history entered by hand stays, and says so. */}
+      {company.charterHistory && company.charterHistory.length > 0 && (
+        <Panel title="Charter history · recorded by hand">
           <div className="table-scroll">
             <table className="table">
               <thead>
@@ -574,8 +710,8 @@ export default async function CompanyProfilePage({ params }: Params) {
               </tbody>
             </table>
           </div>
-        )}
-      </Panel>
+        </Panel>
+      )}
     </>
   );
 }
