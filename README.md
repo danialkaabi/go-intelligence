@@ -106,10 +106,11 @@ by hand, or a company you profiled from its website.
 
 ### Filtering
 
-GO Fleet and GO Companies share one query builder (`components/app/FilterRail`)
-and both filter on the server — neither database can travel to the browser.
-Counts beside each option are computed against the rest of the query, so a
-number says what ticking that option would actually return.
+GO Fleet, GO Companies and GO Contracts share one query builder
+(`components/app/FilterRail`) and all three filter on the server — none of
+these datasets can travel to the browser. Counts beside each option are
+computed against the rest of the query, so a number says what ticking that
+option would actually return.
 
 The company directory is filtered by **what a company runs**, not only by its
 own record: vessel type, sub-type, size class, flag and vessel status are read
@@ -123,6 +124,13 @@ record flags combine as *all*, and the rail says so.
 Those cross-fleet facets are precomputed once per process in
 `fleetFacetsForCompany` and `charterersForCompany` — eight thousand companies
 filtered against eleven facets per request is too much to recompute per row.
+
+The charter book is filtered by status (running now, completed, not yet
+started, period not recorded), contract form, vessel type, charterer, owner
+at the time, year fixed, charter length, currency, rate basis and record
+flags. The running-charter tiles and the renewal-exposure quarters follow the
+query rather than the whole book, so filtering to one charterer or one vessel
+class shows that slice's exposure.
 
 ### How charter history reaches a page
 

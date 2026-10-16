@@ -14,6 +14,17 @@ const DERIVED_REASON: Record<FixtureDerivedField, string> = {
     'Beneficial owner was missing from the source. Taken from the same vessel’s other rows, or from fleet naming and public record.',
 };
 
+/** Secondary lines under a vessel name — owner, and the preparer's note. */
+const SUB: React.CSSProperties = {
+  fontSize: 11.5,
+  color: 'var(--text-5)',
+  marginTop: 3,
+  fontWeight: 400,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
 /** Marks a value the data preparer worked out rather than one the source
  *  carried, so a derived figure never reads as a recorded fact. */
 function Derived({ field }: { field: FixtureDerivedField }) {
@@ -56,6 +67,9 @@ export default function FixtureTable({
 }) {
   const anyDerived = fixtures.some((f) => f.derived?.length);
   const anyNote = fixtures.some((f) => f.reviewNote);
+  // With both a vessel and an owner column the table outgrows the space a
+  // filter rail leaves it, so the owner goes under the vessel name instead.
+  const ownerUnderVessel = showVessel && showOwner;
 
   return (
     <>
@@ -63,14 +77,14 @@ export default function FixtureTable({
         <table className="table">
           <thead>
             <tr>
-              {showVessel && <th>Vessel</th>}
+              {showVessel && <th>{ownerUnderVessel ? 'Vessel · owner at the time' : 'Vessel'}</th>}
               <th>Start</th>
               <th>Period</th>
               <th>Contract</th>
               <th className="th-num">Rate</th>
               <th>Charterer</th>
-              {showOwner && <th>Owner at the time</th>}
-              {anyNote && <th>Note</th>}
+              {showOwner && !ownerUnderVessel && <th>Owner at the time</th>}
+              {anyNote && !ownerUnderVessel && <th>Note</th>}
             </tr>
           </thead>
           <tbody>
@@ -80,11 +94,31 @@ export default function FixtureTable({
               return (
                 <tr key={f.id}>
                   {showVessel && (
-                    <td className="td-strong">
+                    <td className="td-strong" style={{ maxWidth: 230 }}>
                       {f.vesselId ? (
                         <Link href={`/app/fleet/${f.vesselId}`}>{f.vesselName}</Link>
                       ) : (
                         f.vesselName
+                      )}
+                      {ownerUnderVessel && (
+                        <>
+                          <div style={SUB}>
+                            {f.ownerId ? (
+                              <Link href={`/app/companies/${f.ownerId}`}>{f.ownerName}</Link>
+                            ) : (
+                              (f.ownerName ?? 'Owner not recorded')
+                            )}
+                            {derived.has('owner') && <Derived field="owner" />}
+                          </div>
+                          {f.reviewNote && (
+                            <div
+                              style={{ ...SUB, color: 'var(--amber)' }}
+                              title={f.reviewNote}
+                            >
+                              {f.reviewNote}
+                            </div>
+                          )}
+                        </>
                       )}
                     </td>
                   )}
@@ -98,17 +132,17 @@ export default function FixtureTable({
                       <span className="muted">Not recorded</span>
                     )}
                   </td>
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
                     {f.period ? (
                       <>
                         {f.period}
                         {f.endDate && (
-                          <span
+                          <div
                             className="mono"
-                            style={{ color: 'var(--text-5)', fontSize: 11.5, marginLeft: 6 }}
+                            style={{ color: 'var(--text-5)', fontSize: 11.5, marginTop: 2 }}
                           >
                             to {date(f.endDate)}
-                          </span>
+                          </div>
                         )}
                       </>
                     ) : (
@@ -134,8 +168,18 @@ export default function FixtureTable({
                       )}
                     </span>
                   </td>
-                  <td className="td-num">{money(f.rate, f.currency, f.rateUnit)}</td>
-                  <td>
+                  <td className="td-num" style={{ whiteSpace: 'nowrap' }}>
+                    {money(f.rate, f.currency, f.rateUnit)}
+                  </td>
+                  <td
+                    style={{
+                      maxWidth: 180,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={f.charterer}
+                  >
                     {f.charterer ? (
                       <>
                         {f.charterer}
@@ -145,7 +189,7 @@ export default function FixtureTable({
                       <span className="muted">Not disclosed</span>
                     )}
                   </td>
-                  {showOwner && (
+                  {showOwner && !ownerUnderVessel && (
                     <td>
                       {f.ownerId ? (
                         <Link href={`/app/companies/${f.ownerId}`} className="link-arrow">
@@ -157,10 +201,23 @@ export default function FixtureTable({
                       {derived.has('owner') && <Derived field="owner" />}
                     </td>
                   )}
-                  {anyNote && (
-                    <td style={{ maxWidth: 260 }}>
+                  {anyNote && !ownerUnderVessel && (
+                    <td>
                       {f.reviewNote ? (
-                        <span style={{ fontSize: 12, color: 'var(--amber)' }}>
+                        // .table sets white-space: nowrap, so a long note
+                        // runs off the end of the table unless this one cell
+                        // is allowed to wrap inside a width of its own.
+                        <span
+                          style={{
+                            display: 'block',
+                            maxWidth: 260,
+                            fontSize: 12,
+                            color: 'var(--amber)',
+                            whiteSpace: 'normal',
+                            overflowWrap: 'anywhere',
+                            lineHeight: 1.45,
+                          }}
+                        >
                           {f.reviewNote}
                         </span>
                       ) : (

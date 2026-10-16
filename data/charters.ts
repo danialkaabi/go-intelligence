@@ -100,6 +100,50 @@ export function runningFixtures(fixtures: Fixture[]): Fixture[] {
   return fixtures.filter((f) => isRunning(f, on));
 }
 
+/** Where a fixture stands today. "Period not recorded" is its own answer
+ *  rather than a guess: 1,296 rows carry no period and 304 no start date, so
+ *  calling those completed would be inventing a fact. */
+export const FIXTURE_STATUSES = [
+  'Running now',
+  'Not yet started',
+  'Completed',
+  'Period not recorded',
+] as const;
+
+export type FixtureStatus = (typeof FIXTURE_STATUSES)[number];
+
+export function fixtureStatus(f: Fixture, on = today()): FixtureStatus {
+  if (f.startDate && f.endDate) {
+    if (f.startDate > on) return 'Not yet started';
+    return f.endDate < on ? 'Completed' : 'Running now';
+  }
+  if (f.endDate) return f.endDate < on ? 'Completed' : 'Running now';
+  if (f.startDate && f.startDate > on) return 'Not yet started';
+  return 'Period not recorded';
+}
+
+/** Charter length, banded. Shortest first — a length reads as a scale
+ *  rather than a popularity list. */
+export const PERIOD_BANDS = [
+  'Up to 1 week',
+  '1–4 weeks',
+  '1–3 months',
+  '3–12 months',
+  '1–3 years',
+  'Over 3 years',
+] as const;
+
+export function periodBand(f: Fixture): string | undefined {
+  const d = f.periodDays;
+  if (!d) return undefined;
+  if (d <= 7) return 'Up to 1 week';
+  if (d <= 31) return '1–4 weeks';
+  if (d <= 92) return '1–3 months';
+  if (d <= 365) return '3–12 months';
+  if (d <= 1095) return '1–3 years';
+  return 'Over 3 years';
+}
+
 /** Every fixture of every vessel this company owns or manages, newest first.
  *
  *  Keyed off the vessel rather than the owner name on the charter row: the
