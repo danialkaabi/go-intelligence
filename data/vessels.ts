@@ -1,5 +1,6 @@
 import type { Vessel } from './types';
 import { VESSEL_DETAILS } from './vessel-details';
+import { COMPANY_MERGES } from './company-merges';
 import imported from './vessels.json';
 
 /**
@@ -21,23 +22,6 @@ import imported from './vessels.json';
  * management tier ids, so adding a vessel populates that company's profile
  * with no join to maintain by hand.
  */
-export const VESSELS: Vessel[] = (imported as Vessel[]).map((v) =>
-  VESSEL_DETAILS[v.id] ? { ...v, ...VESSEL_DETAILS[v.id] } : v,
-);
-
-/** Indexed lookups — a linear scan over 11k records per call is too slow
- *  when a page resolves many vessels at once. */
-const BY_ID = new Map(VESSELS.map((v) => [v.id, v]));
-const BY_IMO = new Map(VESSELS.filter((v) => v.imo).map((v) => [v.imo!, v]));
-
-export function getVessel(id: string): Vessel | undefined {
-  return BY_ID.get(id);
-}
-
-export function getVesselByImo(imo: string): Vessel | undefined {
-  return BY_IMO.get(imo);
-}
-
 /** The six vessel fields that name a company. "Commercially Controlled" is
  *  the seventh management tier and has no field of its own, so it is absent
  *  here rather than reported as zero. */
@@ -60,6 +44,30 @@ export const OWNERSHIP_TIER_LABELS: Record<OwnershipTierField, string> = {
   technicalManagerId: 'Technical Manager',
   ismManagerId: 'ISM Manager',
 };
+
+export const VESSELS: Vessel[] = (imported as Vessel[]).map((v) => {
+  const merged = VESSEL_DETAILS[v.id] ? { ...v, ...VESSEL_DETAILS[v.id] } : { ...v };
+  // Ownership follows the grouping: a vessel filed under a duplicate company
+  // record belongs to the record that duplicate was folded into.
+  for (const tier of OWNERSHIP_TIER_FIELDS) {
+    const id = merged[tier];
+    if (id && COMPANY_MERGES[id]) merged[tier] = COMPANY_MERGES[id];
+  }
+  return merged;
+});
+
+/** Indexed lookups — a linear scan over 11k records per call is too slow
+ *  when a page resolves many vessels at once. */
+const BY_ID = new Map(VESSELS.map((v) => [v.id, v]));
+const BY_IMO = new Map(VESSELS.filter((v) => v.imo).map((v) => [v.imo!, v]));
+
+export function getVessel(id: string): Vessel | undefined {
+  return BY_ID.get(id);
+}
+
+export function getVesselByImo(imo: string): Vessel | undefined {
+  return BY_IMO.get(imo);
+}
 
 /** Vessels a company touches at any ownership or management tier. */
 const BY_COMPANY = (() => {

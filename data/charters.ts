@@ -1,6 +1,7 @@
 import type { CompanyCharterSummary, Fixture } from './types';
 import type { FixtureType } from '@/lib/taxonomy';
 import { OWNERSHIP_TIER_FIELDS, VESSELS, vesselsForCompany } from './vessels';
+import { COMPANY_MERGES } from './company-merges';
 import imported from './charters.json';
 
 /**
@@ -17,7 +18,12 @@ import imported from './charters.json';
  * vessel name and is still counted — losing charter history because a vessel
  * record is missing would be the worse outcome.
  */
-export const FIXTURES: Fixture[] = imported as Fixture[];
+export const FIXTURES: Fixture[] = (imported as Fixture[]).map((f) =>
+  // The owner on a fixture follows the same grouping as the fleet.
+  f.ownerId && COMPANY_MERGES[f.ownerId]
+    ? { ...f, ownerId: COMPANY_MERGES[f.ownerId] }
+    : f,
+);
 
 /** Fixtures per vessel, newest first — the order the JSON already holds. */
 const BY_VESSEL = (() => {

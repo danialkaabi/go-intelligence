@@ -70,6 +70,9 @@ const VESSEL_INDEX = VESSELS.map((v) => ({
 const COMPANY_INDEX = COMPANIES.map((c) => ({
   c,
   name: norm(c.name),
+  /** Names of duplicate records folded into this one, so searching for a
+   *  name the directory no longer shows still finds the company. */
+  aliases: (c.alsoKnownAs ?? []).map(norm),
   /** Fleet size breaks ties: searching "tidewater" should offer the arm
    *  that runs six hundred vessels before a single-ship subsidiary. */
   fleet: vesselsForCompany(c.id).length,
@@ -134,8 +137,10 @@ function scoreCompany(
 ): number | undefined {
   if (row.name === needle) return 0;
   if (row.name.startsWith(needle)) return 1;
-  if (row.name.includes(needle)) return 2;
-  if (words.length > 1 && words.every((w) => row.name.includes(w))) return 3;
+  if (row.aliases.some((a) => a === needle || a.startsWith(needle))) return 2;
+  if (row.name.includes(needle)) return 3;
+  if (row.aliases.some((a) => a.includes(needle))) return 4;
+  if (words.length > 1 && words.every((w) => row.name.includes(w))) return 5;
   return undefined;
 }
 

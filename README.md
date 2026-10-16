@@ -81,7 +81,7 @@ file it lives in, the fields it requires, and what each one feeds.
 | Records | Count | Source |
 | --- | --- | --- |
 | Vessels | 13,639 | GO Fleet database, first and second batches |
-| Companies | 8,144 | GO Companies workbook, plus owners found on vessel records |
+| Companies | 7,784 | GO Companies workbook, plus owners found on vessel records, after 360 duplicate records were grouped |
 | Fixtures | 9,279 | GO charter data, 2005–2029, 2,593 vessels |
 | Vessel photographs | 3 | Astro Offshore spec sheets |
 | Profiled companies | 5 | Researched from company websites |
@@ -97,7 +97,7 @@ wins over the import:
 | Bulk (replaced on import) | Overlay (survives import) |
 | --- | --- |
 | `data/vessels.json` | `data/vessel-details.ts` |
-| `data/companies.json` | `data/company-details.ts` |
+| `data/companies.json` | `data/company-details.ts`, `data/company-merges.ts` |
 | `data/charters.json` | a vessel's `charterHistory`, a company's `charterHistory` |
 
 `data/vessels.ts` and `data/companies.ts` merge the two and export the result.
@@ -132,6 +132,30 @@ flags. The running-charter tiles and the renewal-exposure quarters follow the
 query rather than the whole book, so filtering to one charterer or one vessel
 class shows that slice's exposure.
 
+### Grouping duplicate companies
+
+The source sheets cut company names at the column width, so the same company
+arrives more than once: "ADNOC Logistics and Service" beside "ADNOC Logistics
+and Services", "ASTRO OFFSHORE PT" beside "Astro Offshore".
+`data/company-merges.ts` points each duplicate at the record the platform
+keeps. It is an overlay, so re-importing the company sheet cannot undo it.
+
+Nothing is deleted. A grouped record's vessels, fixtures and URL all move to
+the record it joined — an old link still opens the company, its former names
+are listed on the profile, and searching for one of them still finds it.
+
+Only three kinds of evidence were acted on, because filing a vessel under a
+company that does not own it is worse than leaving two records standing:
+
+| Evidence | Keeps | Example |
+| --- | --- | --- |
+| The longer name continues the shorter one's last word | the longer | `Alam Maritim` → `Alam Maritime` |
+| The longer name adds only complete legal form words | the longer | `Geonavegacao` → `Geonavegacao SAS` |
+| The longer name adds only a one or two letter tail — a legal form that lost its own ending | the shorter | `Centus Marine L` → `Centus Marine` |
+
+A name that two different longer names could continue is left alone, and a
+record carrying a written profile is never grouped away.
+
 ### How charter history reaches a page
 
 Nothing on a vessel points at its fixtures, and nothing on a company points
@@ -158,6 +182,7 @@ All records live in `/data` as typed arrays:
 | -------------------- | --------------------------------- |
 | `data/vessels.ts`    | `VESSELS`                         |
 | `data/companies.ts`  | `COMPANIES`                       |
+| `data/company-merges.ts` | `COMPANY_MERGES`              |
 | `data/charters.ts`   | `FIXTURES`                        |
 | `data/contracts.ts`  | `CONTRACTS`                       |
 | `data/tenders.ts`   | `TENDERS`                        |

@@ -165,6 +165,13 @@ export default async function CompanyProfilePage({ params }: Params) {
           </Badge>
         )}
         {company.duplicateOfId && <Badge tone="red" dot>Suspected duplicate</Badge>}
+        {company.alsoKnownAs && (
+          <Badge tone="blue">
+            {company.alsoKnownAs.length === 1
+              ? '1 duplicate record grouped'
+              : `${company.alsoKnownAs.length} duplicate records grouped`}
+          </Badge>
+        )}
         {/* Matches the directory's Profiled column, which keys off a
             written description rather than any provenance at all. */}
         {company.description && <Badge tone="green" dot>Profiled</Badge>}
@@ -172,6 +179,37 @@ export default async function CompanyProfilePage({ params }: Params) {
           <Badge tone="blue" dot>Website verified</Badge>
         )}
       </div>
+
+      {/* ---------- Records grouped into this one ---------- */}
+      {company.alsoKnownAs && (
+        <Panel style={{ marginBottom: 16 }}>
+          <div className="panel-body">
+            <div className="row g10" style={{ marginBottom: 8, color: 'var(--blue-400)' }}>
+              <IconCompanies size={16} />
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text)' }}>
+                Also recorded as
+              </span>
+            </div>
+            <div className="row g8 wrapflex" style={{ marginBottom: 10 }}>
+              {company.alsoKnownAs.map((n) => (
+                <span className="plan-feat" key={n}>
+                  {n}
+                </span>
+              ))}
+            </div>
+            <p style={{ fontSize: 12.5, color: 'var(--text-4)', lineHeight: 1.65 }}>
+              The source sheets cut company names at the column width, so the same
+              company arrived more than once. Those records are grouped here — their
+              vessels and fixtures are on this profile, and their old links still
+              land on it. The grouping lives in{' '}
+              <span className="mono" style={{ color: 'var(--blue-400)' }}>
+                data/company-merges.ts
+              </span>
+              .
+            </p>
+          </div>
+        </Panel>
+      )}
 
       {/* ---------- Suspected duplicate ---------- */}
       {duplicateOf && (

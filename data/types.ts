@@ -234,6 +234,11 @@ export interface Company {
    *  Both records are kept — merging is a decision for whoever owns the
    *  data, not something an import should do silently. */
   duplicateOfId?: string;
+
+  /** Names of duplicate records folded into this one, from
+   *  data/company-merges.ts. The old names are kept and shown rather than
+   *  thrown away: someone searching for one should still find the company. */
+  alsoKnownAs?: string[];
 }
 
 /* ---------- Contract ---------- */
