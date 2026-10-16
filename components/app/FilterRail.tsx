@@ -11,25 +11,40 @@ export interface Facet {
   label: string;
   options: Array<{ value: string; count: number }>;
   defaultOpen?: boolean;
+  /** How several ticked options combine. 'any' is the usual one — tick two
+   *  vessel types and you get either. 'all' is for independent flags, where
+   *  ticking two means both must hold. */
+  mode?: 'any' | 'all';
 }
 
 /**
- * The GO Fleet query builder.
+ * The query builder used by GO Fleet and GO Companies.
  *
- * Filtering happens on the server — at eleven thousand vessels the database
- * cannot travel to the browser — so this component's only job is to write the
- * query string. The counts beside each option are computed server-side and
- * passed in.
+ * Filtering happens on the server — neither database can travel to the
+ * browser — so this component's only job is to write the query string. The
+ * counts beside each option are computed server-side and passed in, against
+ * the rest of the query rather than the whole database, so each one says
+ * what ticking it would actually return.
  */
-export default function FleetFilters({
+export default function FilterRail({
   facets,
-  inertGroups,
+  inertGroups = [],
+  searchPlaceholder,
+  queryLead,
+  emptyQueryLabel,
+  anchorId,
   children,
 }: {
   facets: Facet[];
   /** Filter groups from the strategy book that need fields the records do
    *  not carry yet. Shown, but inert. */
-  inertGroups: string[];
+  inertGroups?: string[];
+  searchPlaceholder: string;
+  /** The leading operator chip, e.g. "Vessel type is". */
+  queryLead: string;
+  emptyQueryLabel: string;
+  /** Anchor the results column carries, for paging links to return to. */
+  anchorId: string;
   /** The server-rendered results panel, placed in the right-hand column. */
   children: React.ReactNode;
 }) {
@@ -88,6 +103,18 @@ export default function FleetFilters({
         >
           {facets.map((f) => (
             <RailSection key={f.key} label={f.label} defaultOpen={f.defaultOpen}>
+              {f.mode === 'all' && f.options.length > 0 && (
+                <p
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--text-5)',
+                    padding: '0 8px 6px',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Every one ticked must hold.
+                </p>
+              )}
               {f.options.length === 0 ? (
                 <p style={{ fontSize: 11.5, color: 'var(--text-5)', padding: '4px 8px' }}>
                   Nothing recorded yet.
@@ -122,19 +149,19 @@ export default function FleetFilters({
           {inertGroups.map((label) => (
             <RailSection label={label} key={label}>
               <p style={{ fontSize: 11.5, color: 'var(--text-5)', padding: '4px 8px', lineHeight: 1.55 }}>
-                Activates once vessel records carry this field.
+                Activates once the records carry this field.
               </p>
             </RailSection>
           ))}
         </Panel>
       </div>
 
-      <div id="fleet-query" className="stack g16" style={{ minWidth: 0 }}>
+      <div id={anchorId} className="stack g16" style={{ minWidth: 0 }}>
         <div className="query-bar">
-          <span className="chip-op">Vessel type is</span>
+          <span className="chip-op">{queryLead}</span>
           {active.length === 0 ? (
             <span style={{ fontSize: 12.5, color: 'var(--text-5)' }}>
-              No filters applied — showing everything in the database
+              {emptyQueryLabel}
             </span>
           ) : (
             active.map((c) => (
@@ -157,7 +184,7 @@ export default function FleetFilters({
           </span>
           <input
             className="input"
-            placeholder="Search vessel name, IMO or GO id — press Enter"
+            placeholder={searchPlaceholder}
             value={term}
             onChange={(e) => setTerm(e.target.value)}
           />

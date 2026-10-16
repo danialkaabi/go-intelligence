@@ -38,9 +38,3 @@ export function companyName(id?: string): string | undefined {
   return BY_ID.get(id)?.name;
 }
 
-/** Every registration country present, sorted, for the directory filter. */
-export const COMPANY_COUNTRIES: string[] = Array.from(
-  new Set(
-    COMPANIES.map((c) => c.country).filter((x): x is string => Boolean(x)),
-  ),
-).sort((a, b) => a.localeCompare(b));

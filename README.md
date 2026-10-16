@@ -84,7 +84,7 @@ file it lives in, the fields it requires, and what each one feeds.
 | Companies | 8,144 | GO Companies workbook, plus owners found on vessel records |
 | Fixtures | 9,279 | GO charter data, 2005–2029, 2,593 vessels |
 | Vessel photographs | 3 | Astro Offshore spec sheets |
-| Profiled companies | 6 | Researched from company websites |
+| Profiled companies | 5 | Researched from company websites |
 
 Everything else — tenders, market benchmarks, alerts — is empty.
 
@@ -103,6 +103,26 @@ wins over the import:
 `data/vessels.ts` and `data/companies.ts` merge the two and export the result.
 So re-importing a newer fleet sheet cannot flatten a spec sheet you typed in
 by hand, or a company you profiled from its website.
+
+### Filtering
+
+GO Fleet and GO Companies share one query builder (`components/app/FilterRail`)
+and both filter on the server — neither database can travel to the browser.
+Counts beside each option are computed against the rest of the query, so a
+number says what ticking that option would actually return.
+
+The company directory is filtered by **what a company runs**, not only by its
+own record: vessel type, sub-type, size class, flag and vessel status are read
+off its fleet, so ticking "AHTS (Large)" returns the companies that operate
+one. Alongside those: the tier it is named at, fleet-size band, registered
+country, company type, the charterers its fleet has worked for, and record
+flags (profiled, has charter history, awaiting entity review, and so on).
+Options within a group combine as *either*; groups combine as *and*; the
+record flags combine as *all*, and the rail says so.
+
+Those cross-fleet facets are precomputed once per process in
+`fleetFacetsForCompany` and `charterersForCompany` — eight thousand companies
+filtered against eleven facets per request is too much to recompute per row.
 
 ### How charter history reaches a page
 

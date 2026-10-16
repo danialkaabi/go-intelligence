@@ -12,7 +12,7 @@ import {
   IconPortfolio,
   IconSearch,
 } from '@/components/ui/Icons';
-import FleetFilters, { type Facet } from './FleetFilters';
+import FilterRail, { type Facet } from '@/components/app/FilterRail';
 import { VESSELS } from '@/data/vessels';
 import { companyName } from '@/data/companies';
 import { num, orDash } from '@/lib/format';
@@ -146,7 +146,14 @@ export default async function FleetPage({ searchParams }: { searchParams: SP }) 
       />
 
       <div className="fleet-layout">
-        <FleetFilters facets={facets} inertGroups={INERT}>
+        <FilterRail
+          facets={facets}
+          inertGroups={INERT}
+          anchorId="fleet-query"
+          queryLead="Vessel type is"
+          emptyQueryLabel="No filters applied — showing everything in the database"
+          searchPlaceholder="Search vessel name, IMO or GO id — press Enter"
+        >
       <Panel
         title={
           VESSELS.length === 0
@@ -272,7 +279,7 @@ export default async function FleetPage({ searchParams }: { searchParams: SP }) 
           </>
         )}
       </Panel>
-        </FleetFilters>
+        </FilterRail>
       </div>
     </>
   );

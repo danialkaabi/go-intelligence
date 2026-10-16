@@ -1,6 +1,6 @@
 import type { CompanyCharterSummary, Fixture } from './types';
 import type { FixtureType } from '@/lib/taxonomy';
-import { vesselsForCompany } from './vessels';
+import { OWNERSHIP_TIER_FIELDS, VESSELS, vesselsForCompany } from './vessels';
 import imported from './charters.json';
 
 /**
@@ -35,9 +35,55 @@ export function fixturesForVessel(vesselId: string): Fixture[] {
   return BY_VESSEL.get(vesselId) ?? [];
 }
 
+/** A charterer the charter data names only as withheld. Grouped with the
+ *  rows that name nobody at all: commercially they say the same thing, even
+ *  though the record keeps them apart. */
+const WITHHELD = /^(undisclosed|not disclosed|unknown|confidential|n\/?a)$/i;
+
 /** Fixtures whose vessel could not be matched to the fleet, so they appear
  *  on no vessel profile. Surfaced rather than buried. */
 export const UNLINKED_FIXTURES: Fixture[] = FIXTURES.filter((f) => !f.vesselId);
+
+/** Companies with charter history behind them — at least one fixture on at
+ *  least one vessel they name. Precomputed: the company directory asks this
+ *  of eight thousand records per request. */
+export const COMPANIES_WITH_FIXTURES: ReadonlySet<string> = (() => {
+  const s = new Set<string>();
+  for (const v of VESSELS) {
+    if (!BY_VESSEL.has(v.id)) continue;
+    for (const t of OWNERSHIP_TIER_FIELDS) {
+      const id = v[t];
+      if (id) s.add(id);
+    }
+  }
+  return s;
+})();
+
+/** Charterers behind each company's fleet, so the directory can answer
+ *  "who has worked for Equinor" without walking every fixture per company. */
+const CHARTERERS_BY_COMPANY = (() => {
+  const m = new Map<string, Set<string>>();
+  for (const v of VESSELS) {
+    const fixtures = BY_VESSEL.get(v.id);
+    if (!fixtures) continue;
+    for (const t of OWNERSHIP_TIER_FIELDS) {
+      const id = v[t];
+      if (!id) continue;
+      let set = m.get(id);
+      if (!set) m.set(id, (set = new Set()));
+      for (const f of fixtures) {
+        if (f.charterer && !WITHHELD.test(f.charterer)) set.add(f.charterer);
+      }
+    }
+  }
+  return m;
+})();
+
+const NO_CHARTERERS: ReadonlySet<string> = new Set();
+
+export function charterersForCompany(companyId: string): ReadonlySet<string> {
+  return CHARTERERS_BY_COMPANY.get(companyId) ?? NO_CHARTERERS;
+}
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -69,11 +115,6 @@ export function fixturesForCompanyFleet(companyId: string): Fixture[] {
     (b.startDate ?? '').localeCompare(a.startDate ?? ''),
   );
 }
-
-/** A charterer the charter data names only as withheld. Grouped with the
- *  rows that name nobody at all: commercially they say the same thing, even
- *  though the record keeps them apart. */
-const WITHHELD = /^(undisclosed|not disclosed|unknown|confidential|n\/?a)$/i;
 
 /** Charterers this company's fleet has worked for, counted from the
  *  fixtures. Mirrors how tierCountsForCompany derives tier counts: no join
