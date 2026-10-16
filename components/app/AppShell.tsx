@@ -36,6 +36,14 @@ export default function AppShell({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { open: paletteOpen, setOpen: setPaletteOpen } = useCommandPalette();
+  // What was typed into the topbar before the palette took over, so the
+  // first keystroke is never swallowed by the handover.
+  const [seed, setSeed] = useState('');
+
+  const openSearch = (text = '') => {
+    setSeed(text);
+    setPaletteOpen(true);
+  };
 
   const isActive = (href: string) =>
     href === '/app' ? pathname === '/app' : pathname.startsWith(href);
@@ -100,11 +108,22 @@ export default function AppShell({
             {sidebarOpen ? <IconClose size={16} /> : <IconMenu size={16} />}
           </button>
 
-          <button className="topbar-search" onClick={() => setPaletteOpen(true)}>
+          {/* A real field, not a button dressed as one: clicking it and
+              typing has to search, which is what anyone expects of it. The
+              palette opens on the first keystroke and carries it over. */}
+          <div className="topbar-search" onClick={() => openSearch()}>
             <IconSearch size={14} />
-            <span className="hide-sm">Search vessel name, company, IMO, MMSI…</span>
-            <span className="kbd">⌘K</span>
-          </button>
+            <input
+              className="topbar-search-input"
+              type="search"
+              placeholder="Search vessel name, company, IMO, MMSI…"
+              aria-label="Search vessels, companies and IMO numbers"
+              value=""
+              onFocus={() => openSearch()}
+              onChange={(e) => openSearch(e.target.value)}
+            />
+            <span className="kbd hide-sm">⌘K</span>
+          </div>
 
           <div className="row g8" style={{ marginLeft: 'auto' }}>
             <Link
@@ -123,7 +142,14 @@ export default function AppShell({
         <main className="shell-page">{children}</main>
       </div>
 
-      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <CommandPalette
+        open={paletteOpen}
+        seed={seed}
+        onClose={() => {
+          setPaletteOpen(false);
+          setSeed('');
+        }}
+      />
     </div>
   );
 }
